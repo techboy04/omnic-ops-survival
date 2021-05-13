@@ -1,3 +1,37 @@
+settings
+{
+	lobby
+	{
+		Allow Players Who Are In Queue: Yes
+		Map Rotation: Paused
+		Match Voice Chat: Enabled
+		Max Team 1 Players: 4
+		Max Team 2 Players: 0
+		Return To Lobby: Never
+		Swap Teams After Match: No
+	}
+
+	modes
+	{
+		Skirmish
+		{
+			enabled maps
+			{
+				Eichenwalde Halloween
+			}
+		}
+
+		General
+		{
+			Allow Hero Switching: Off
+			Game Mode Start: Immediately
+			Hero Limit: Off
+			Respawn As Random Hero: On
+			Spawn Health Packs: Disabled
+		}
+	}
+}
+
 variables
 {
 	global:
@@ -472,6 +506,7 @@ rule("Start Game")
 	actions
 	{
 		Wait Until(Number Of Living Players(Team 1) >= 1, 99999);
+		Wait Until(Is Button Held(Host Player, Button(Interact)), 99999);
 		Wait(15, Ignore Condition);
 		Teleport(All Players(Team 1), Global.PlayerSpawn);
 		Create Dummy Bot(Hero(Bastion), Team 2, -1, Random Value In Array(Global.EnemySpawns), Vector(0, 0, 0));
@@ -661,16 +696,16 @@ rule("Player Dies")
 
 	actions
 	{
-		If(Global.PerkLossType == Custom String("Last Bought Perk"));
+		If(Global.PerkLossType == 0);
 			If(Count Of(Event Player.Perks) >= 1);
 				Event Player.Perks = Remove From Array(Event Player.Perks, Event Player.Perks[Count Of(Event Player.Perks) - 1]);
 			End;
-		Else If(Global.PerkLossType == Custom String("All Perks"));
+		Else If(Global.PerkLossType == 1);
 			Event Player.Perks = Empty Array;
 		End;
 		Small Message(Event Player, Custom String("Respawning in 5 seconds..."));
 		Wait(5, Abort When False);
-		If(Global.WeaponLossType == Custom String("Back to Starter"));
+		If(Global.WeaponLossType == 1);
 			Start Forcing Player To Be Hero(Event Player, Hero(D.Va));
 		End;
 		Respawn(Event Player);
@@ -1443,6 +1478,7 @@ rule("Game Over Screen")
 
 	actions
 	{
+		Set Status(All Players(All Teams), Null, Invincible, 9999);
 		Destroy All Dummy Bots;
 		Start Camera(All Players(All Teams), Global.AnomalyLocation, Global.PlayerSpawn, 0);
 		Disable Hero HUD(All Players(All Teams));
@@ -1474,7 +1510,9 @@ rule("Game Over Screen")
 			Declare Team Victory(Team 1);
 		Else;
 			Declare Team Victory(Team 2);
-			Set Status(All Players(All Teams), Null, Invincible, 9999);
+		End;
+		Wait(5, Ignore Condition);
+		Restart Match;
 	}
 }
 
@@ -2294,5 +2332,38 @@ rule("Change Target every few seconds")
 		Wait(5, Ignore Condition);
 		Call Subroutine(ChangeTarget);
 		Loop If(Is Alive(Event Player) == True);
+	}
+}
+
+rule("Dummy Bot Name")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+	}
+
+	actions
+	{
+		If(Hero Of(Event Player) == Hero(Bastion));
+			Start Forcing Dummy Bot Name(Event Player, Custom String("Omnic"));
+		Else If(Hero Of(Event Player) == Hero(Orisa));
+			Start Forcing Dummy Bot Name(Event Player, Custom String("OR15"));
+	}
+}
+
+rule("Settings HUD")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
 	}
 }
