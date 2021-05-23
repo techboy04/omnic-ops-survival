@@ -159,6 +159,8 @@ variables
 		88: RewardLocation
 		89: ChallengePrice
 		90: ChallengeMaxTime
+		91: UselessTips
+		92: ChosenTip
 		95: PowerupTimer
 		96: StartingPoints
 		97: PerkLossType
@@ -228,6 +230,9 @@ rule("Variables")
 			"Mission Successful! Lets bring them home!"), Custom String("Nice work team! Lets meetup and debrief!"));
 		Global.SpecialRoundEvents = Array(Custom String("Defuse the Bomb"), Custom String("Low Gravity"), Custom String(
 			"Purchases Disabled"));
+		Global.UselessTips = Array(Custom String("Every map has 1 unique perk!"), Custom String(
+			"Play challenges to unlock unique rewards!"), Custom String("Special waves occur every 5 waves"), Custom String(
+			"Dark portals show where the enemies will spawn"), Custom String("Some heroes give a better point advantage than others"));
 	}
 }
 
@@ -253,7 +258,7 @@ rule("Location Set")
 		Global.EnemySpawns = Array(Vector(47.223, 9.752, -92), Vector(66.731, 17.220, -60.246), Vector(93.399, 14.041, -116.360), Vector(
 			88.539, 14.027, -66.493));
 		Global.TrapActivateLocation = Vector(60.814, 20.272, -96.224);
-		Global.TrapTargetArea = Vector(83.517, 14.002, -85.302);
+		Global.TrapTargetArea = Vector(88.056, 13.969, -68.027);
 		Global.PackAPunchLocation = Vector(75.250, 14.042, -50.939);
 		Global.EE1Location = Vector(52.385, 19.023, -102.326);
 		Global.EE2Location = Vector(83.951, 14.197, -103.130);
@@ -553,6 +558,8 @@ rule("Start Game")
 		Global.HasGameStarted = True;
 		Wait(15, Ignore Condition);
 		Destroy All HUD Text;
+		Enable Hero HUD(All Players(All Teams));
+		Enable Messages(All Players(All Teams));
 		Global.ShowGameStart = True;
 		Teleport(All Players(Team 1), Global.PlayerSpawn);
 		Create Dummy Bot(Hero(Bastion), Team 2, -1, Random Value In Array(Global.EnemySpawns), Vector(0, 0, 0));
@@ -2414,6 +2421,65 @@ rule("Settings HUD")
 		All;
 		All;
 	}
+
+	actions
+	{
+		Create HUD Text(Event Player, Global.ChallengeMaxTime == 100 ? Custom String("Challenge Start Timer: 100 seconds") : Custom String(
+			"Challenge Start Timer: {0} seconds - MODIFIED", Global.ChallengeMaxTime), Null, Null, Right, 1,
+			Global.ChallengeMaxTime == 100 ? Color(Aqua) : Color(Sky Blue), Color(White), Color(White),
+			Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.EnableSpecialEvents == True ? Custom String("Enable Special waves: On") : Custom String(
+			"Enable Special waves: Off - MODIFIED"), Null, Null, Right, 2, Global.EnableSpecialEvents == True ? Color(Aqua) : Color(
+			Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		disabled Create HUD Text(Event Player, Global.MysteryBoxClass == 0 ? Custom String("Mystery Box Weapon Class -  Default") : Custom String(
+			"Mystery Box Weapon Class - {0} - MODIFIED", Global.MysteryBoxClass), Null, Null, Right, 3,
+			Global.MysteryBoxClass == 0 ? Color(Aqua) : Color(Sky Blue), Color(White), Color(White),
+			Visible To Sort Order String and Color, Default Visibility);
+		disabled Create HUD Text(Event Player, Global.StartTimer == 100 ? Custom String("Perk Loss Upon Death: Last Bought") : Custom String(
+			"Perk Loss Upon Death: {0} - MODIFIED", Global.StartTimer), Null, Null, Right, 4, Global.StartTimer == 100 ? Color(Aqua)
+			: Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.PowerupTimer == 60 ? Custom String("Powerup Max Time: 60 seconds") : Custom String(
+			"Powerup Max Time: {0} seconds - MODIFIED", Global.PowerupTimer), Null, Null, Right, 5, Global.PowerupTimer == 60 ? Color(Aqua)
+			: Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.StartingPoints == 0 ? Custom String("Starting Points: 0 points") : Custom String(
+			"Starting Points: {0} points - MODIFIED", Global.StartingPoints), Null, Null, Right, 6, Global.StartingPoints == 0 ? Color(
+			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.WaveLimit == 0 ? Custom String("Wave Limit: None") : Custom String(
+			"Wave Limit: {0} - MODIFIED", Global.WaveLimit), Null, Null, Right, 7, Global.WaveLimit == 0 ? Color(Aqua) : Color(Sky Blue),
+			Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.WeaponLossType == 0 ? Custom String("Weapon Loss Upon Death: Keep Weapon") : Custom String(
+			"Weapon Loss Upon Death: Default Weapon - MODIFIED"), Null, Null, Right, 8, Global.WeaponLossType == 0 ? Color(Aqua) : Color(
+			Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		"Prices"
+		Create HUD Text(Event Player, Global.PowerPrice == 5000 ? Custom String("Power Price: 5000 points") : Custom String(
+			"Power Price: {0} - MODIFIED", Global.PowerPrice), Null, Null, Right, 10, Global.PowerPrice == 5000 ? Color(Aqua) : Color(
+			Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.MysteryBoxPrice == 950 ? Custom String("Mystery Box Price: 950 points") : Custom String(
+			"Mystery Box Price: {0} - MODIFIED", Global.MysteryBoxPrice), Null, Null, Right, 11, Global.MysteryBoxPrice == 950 ? Color(
+			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.QuickRevivePrice == 1500 ? Custom String("Quick Revive Price: 1500 points") : Custom String(
+			"Quick Revive Price: {0} - MODIFIED", Global.QuickRevivePrice), Null, Null, Right, 12, Global.QuickRevivePrice == 1500 ? Color(
+			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.StaminupPrice == 2000 ? Custom String("Staminup Price: 2000 points") : Custom String(
+			"Staminup Price: {0} - MODIFIED", Global.StaminupPrice), Null, Null, Right, 13, Global.StaminupPrice == 2000 ? Color(Aqua)
+			: Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.JuggernogPrice == 2500 ? Custom String("Juggernog Price: 2500 points") : Custom String(
+			"Quick Revive Price: {0} - MODIFIED", Global.JuggernogPrice), Null, Null, Right, 14, Global.JuggernogPrice == 2500 ? Color(
+			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.ElectricCherryPrice == 2000 ? Custom String("Electric Cherry Price: 2000 points")
+			: Custom String("Electric Cherry Price: {0} - MODIFIED", Global.ElectricCherryPrice), Null, Null, Right, 15,
+			Global.ElectricCherryPrice == 2000 ? Color(Aqua) : Color(Sky Blue), Color(White), Color(White),
+			Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.TrapPrice == 1500 ? Custom String("Trap Price: 1500 points") : Custom String(
+			"Trap Price: {0} - MODIFIED", Global.TrapPrice), Null, Null, Right, 16, Global.TrapPrice == 1500 ? Color(Aqua) : Color(
+			Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.PackAPunchPrice == 5000 ? Custom String("Pack a Punch Price: 5000 points") : Custom String(
+			"Pack a Punch Price: {0} - MODIFIED", Global.PackAPunchPrice), Null, Null, Right, 17, Global.PackAPunchPrice == 5000 ? Color(
+			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Global.ChallengePrice == 600 ? Custom String("Challenge Machine Price: 600 points") : Custom String(
+			"Challenge Machine Price: {0} - MODIFIED", Global.ChallengePrice), Null, Null, Right, 18, Global.ChallengePrice == 600 ? Color(
+			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+	}
 }
 
 rule("Lobby Hud")
@@ -2433,11 +2499,38 @@ rule("Lobby Hud")
 	actions
 	{
 		Create HUD Text(All Players(All Teams), Event Player == Host Player ? Custom String("{0} - HOST", Event Player) : Event Player,
-			Null, Null, Left, 0, Host Player == Event Player ? Color(Aqua) : Color(Sky Blue), Color(White), Null,
+			Null, Null, Left, 3, Host Player == Event Player ? Color(Aqua) : Color(Sky Blue), Color(White), Null,
 			Visible To Sort Order String and Color, Default Visibility);
 		Create HUD Text(Event Player, Global.HasGameStarted == True ? Custom String("Game is starting...") : (
 			Host Player == Event Player ? Custom String("Press {0} to start the game", Input Binding String(Button(Interact)))
 			: Custom String("Waiting for host to start the game")), Null, Null, Top, 0, Global.HasGameStarted == True ? Color(Green)
 			: Color(Red), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Custom String("Useless Tips:\r\n{0}", Global.ChosenTip), Null, Null, Left, 1, Color(White), Color(
+			White), Color(White), Visible To and String, Default Visibility);
+		Disable Hero HUD(Event Player);
+		Disable Messages(Event Player);
+		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
+			Null, Left, 2, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+	}
+}
+
+rule("Tips")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global.HasGameStarted != True;
+	}
+
+	actions
+	{
+		Wait(5, Abort When False);
+		Global.ChosenTip = Random Value In Array(Global.UselessTips);
+		Play Effect(All Players(All Teams), Good Pickup Effect, Color(White), Global.Barrier, 100);
+		Loop If Condition Is True;
 	}
 }
