@@ -1,5 +1,10 @@
 settings
 {
+	main
+	{
+		Description: "Fight endless waves of omnics on this COD Zombies styled survival. View the github for more information: github.com/techboy04/omnic-ops-survival Code: 1JK1X"
+	}
+
 	lobby
 	{
 		Allow Players Who Are In Queue: Yes
@@ -2477,6 +2482,8 @@ rule("Settings HUD")
 
 	actions
 	{
+		Create HUD Text(Event Player, Custom String("General Settings"), Null, Null, Right, -1, Color(Blue), Color(White), Color(White),
+			Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Global.ChallengeMaxTime == 100 ? Custom String("Challenge Start Timer: 100 seconds") : Custom String(
 			"Challenge Start Timer: {0} seconds - MODIFIED", Global.ChallengeMaxTime), Null, Null, Right, 1,
 			Global.ChallengeMaxTime == 100 ? Color(Aqua) : Color(Sky Blue), Color(White), Color(White),
@@ -2532,6 +2539,8 @@ rule("Settings HUD")
 		Create HUD Text(Event Player, Global.ChallengePrice == 600 ? Custom String("Challenge Machine Price: 600 points") : Custom String(
 			"Challenge Machine Price: {0} - MODIFIED", Global.ChallengePrice), Null, Null, Right, 18, Global.ChallengePrice == 600 ? Color(
 			Aqua) : Color(Sky Blue), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
+		Create HUD Text(Event Player, Custom String("Price Settings"), Null, Null, Right, 9, Color(Blue), Color(White), Color(White),
+			Visible To and String, Default Visibility);
 	}
 }
 
@@ -2552,20 +2561,26 @@ rule("Lobby Hud")
 	actions
 	{
 		Create HUD Text(All Players(All Teams), Event Player == Host Player ? Custom String("{0} - HOST", Event Player) : Event Player,
-			Null, Null, Left, 3, Host Player == Event Player ? Color(Aqua) : Color(Sky Blue), Color(White), Null,
+			Null, Null, Left, Slot Of(Event Player), Host Player == Event Player ? Color(Aqua) : Color(Sky Blue), Color(White), Null,
 			Visible To Sort Order String and Color, Default Visibility);
 		Create HUD Text(Event Player, Global.HasGameStarted == True ? Custom String("Game is starting...") : (
 			Host Player == Event Player ? Custom String("Press {0} to start the game", Input Binding String(Button(Interact)))
 			: Custom String("Waiting for host to start the game")), Null, Null, Top, 0, Global.HasGameStarted == True ? Color(Green)
 			: Color(Red), Color(White), Color(White), Visible To Sort Order String and Color, Default Visibility);
-		Create HUD Text(Event Player, Custom String("Useless Tips:\r\n{0}", Global.ChosenTip), Null, Null, Left, 1, Color(White), Color(
+		Create HUD Text(Event Player, Custom String("Useless Tips:\r\n{0}", Global.ChosenTip), Null, Null, Left, -2, Color(White), Color(
 			White), Color(White), Visible To and String, Default Visibility);
 		Disable Hero HUD(Event Player);
 		Disable Messages(Event Player);
 		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
-			Null, Left, 2, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Null, Left, -1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
-			Null, Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Null, Left, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
+			Null, Right, -2, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Custom String("Check out all techs other codes! - techsgames.xyz"), Null, Null, Right, -3, Color(
+			White), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
+			Null, Right, -4, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 	}
 }
 
