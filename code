@@ -382,7 +382,7 @@ rule("Spawn Effects")
 		Create Effect(Global.OrbsActivated == 3 ? All Players(All Teams) : Null, Ring, Color(Purple), Global.StartBossLocation, 3,
 			Visible To Position and Radius);
 		Create Effect(All Players(All Teams), Ring, Color(Violet), Global.WorkbenchLoc, 1, Visible To Position Radius and Color);
-		Create In-World Text(All Players(All Teams), Ability Icon String(Hero(Ana), Button(Ability 2)), Global.WorkbenchLoc, 2,
+		Create In-World Text(All Players(All Teams), Ability Icon String(Hero(Torbjörn), Button(Ability 2)), Global.WorkbenchLoc, 2,
 			Do Not Clip, Visible To Position and String, Color(White), Default Visibility);
 		"Parts"
 		Create Effect(All Players(All Teams), Sparkles, Color(Gray), Global.PartsLoc[0], 0.050, Visible To Position Radius and Color);
@@ -2975,8 +2975,14 @@ rule("Buy Part")
 		If(Global.CanBuyBuildable == False);
 			If(Array Contains(Global.Parts, Custom String("One")) && Array Contains(Global.Parts, Custom String("Two")) && Array Contains(
 				Global.Parts, Custom String("Three")));
-				Small Message(Event Player, Custom String("Combining Parts..."));
-				Wait(3, Abort When False);
+				Small Message(Event Player, Custom String("Combining Parts... 3"));
+				Wait(1, Abort When False);
+				Small Message(Event Player, Custom String("Combining Parts... 2"));
+				Wait(1, Abort When False);
+				Small Message(Event Player, Custom String("Combining Parts... 1"));
+				Wait(1, Abort When False);
+				Small Message(Event Player, Custom String("Combining Parts... 0"));
+				Wait(1, Abort When False);
 				Play Effect(All Players(All Teams), Bad Explosion, Color(White), Global.WorkbenchLoc, 5);
 				Play Effect(All Players(All Teams), Explosion Sound, Color(White), Global.WorkbenchLoc, 100);
 				Wait(1, Ignore Condition);
