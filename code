@@ -1,18 +1,600 @@
-A lot of improvements, some change the way the game is played for the better
+settings
+{
+	main
+	{
+		Description: "Fight endless waves of omnics on this COD Zombies styled survival. View the github for more information: github.com/techboy04/omnic-ops-survival"
+		Mode Name: "Omnic Ops Survival"
+	}
 
-- Added a Revive system
-- Players will have to hold interact to revive players but they will be able to continue fighting and moving (must be inside the ring though)
-- Downed outside of bounds or from a cliff will teleport you back to inside the bounds
-- Instead of a shorter respawn time, Self Revives will automatically revive you if you have at least one
-- Enemies now change targets properly if their initial target is killed
-- Enemies now spawn closest to their target
-- Enemies targets get randomized between spawn points properly
-- Revamped the Lobby, now every player needs to Ready Up in order to start (this may change in the future)
-- Players that are downed will call for help to properly notify the team
-- Players will now gain healing over time regardless of obtaining Quick Revive. More healing is done depending on the tier its on
-- Quick Revive will now shorten the players revive time to another player
-- Added a new map, **Rialto**
+	lobby
+	{
+		Allow Players Who Are In Queue: Yes
+		Map Rotation: After A Game
+		Match Voice Chat: Enabled
+		Max Team 1 Players: 4
+		Max Team 2 Players: 0
+		Return To Lobby: Never
+		Swap Teams After Match: No
+	}
 
-**Developers notes**: Adding maps will be a little tricky as time goes on because I want to add the maps from modes like Push and Control and with how I setup the maps, itll be hard to find which area works best for which. So there may be a slow down of maps or none of the maps that corrospond those modes wont be happening at all, itll just depend.
-For the revive system, im quite happy about how it was done as it took me a few years to figure out a somewhat perfect system, it still needs work but its fully functional and with the improved AI, makes things feel more refined and less clunky
-I am also planning on expanding the stories with improved missions thatll help make connections to this particular mode.
+	modes
+	{
+		Skirmish
+		{
+			enabled maps
+			{
+				Blizzard World 972777519512068153 972777519512068154 972777519512068194
+				Blizzard World Winter 972777519512063901
+				Dorado 972777519512068153 972777519512068292
+				Eichenwalde 972777519512068292 972777519512068154
+				Eichenwalde Halloween 972777519512063901
+				Hanamura 972777519512063901
+				Hanamura Winter 972777519512063901
+				Havana 972777519512068153 972777519512068154
+				Junkertown 972777519512068154
+				King's Row 972777519512068153 972777519512068292
+				King's Row Winter 972777519512063901
+				New Junk City 972777519512068154
+				Paris 972777519512063901
+				Rialto 972777519512068292 972777519512068154
+			}
+		}
+
+		General
+		{
+			Allow Hero Switching: Off
+			Game Mode Start: Immediately
+			Hero Limit: Off
+			Respawn As Random Hero: On
+			Spawn Health Packs: Disabled
+		}
+	}
+
+	heroes
+	{
+		Team 2
+		{
+			Orisa
+			{
+				Damage Received: 20%
+				Health: 500%
+				Projectile Speed: 95%
+			}
+		}
+
+		General
+		{
+			D.Va
+			{
+				Spawn Without Mech: On
+				Ultimate Ability Self-Destruct: Off
+			}
+
+			enabled heroes
+			{
+				D.Va
+			}
+		}
+	}
+
+	workshop
+	{
+		Soul Box Kill Limit: 10
+	}
+
+	extensions
+	{
+		Buff Status Effects
+		Buff and Debuff Sounds
+		Energy Explosion Effects
+		Kinetic Explosion Effects
+		Explosion Sounds
+		Spawn More Dummy Bots
+		Projectiles
+	}
+}
+
+variables
+{
+	global:
+		1: Wave
+		2: ShowGameStart
+		3: PowerLocation
+		4: MaxPerkTiers
+		5: PlayerSpawn
+		6: JugLocation
+		7: StaminLocation
+		8: ElectricLocation
+		9: QuickReviveLocation
+		10: Barrier
+		11: Power
+		12: PerkLocations
+		13: ZombiesLeft
+		14: BarrierRadius
+		15: MysteryBox
+		16: BoxOpen
+		17: HeorWeapons
+		18: DoublePointsActive
+		19: StartDirector
+		20: EnemySpawns
+		21: RandomStartLines
+		22: RandomLoseLines
+		23: RandomExfilLines
+		24: EnemyMaxHealth
+		25: EnemyMaxDamage
+		26: ExplosiveLines
+		27: SniperLines
+		28: AssaultLines
+		29: EnemyTypes
+		30: QuickRevivePrice
+		31: StaminupPrice
+		32: JuggernogPrice
+		33: ElectricCherryPrice
+		34: PowerPrice
+		35: MysteryBoxPrice
+		36: UpgradableLevels
+		37: TrapActivateLocation
+		38: TrapTargetArea
+		39: TrapActive
+		40: PackAPunchLocation
+		41: PackAPunchPrice
+		42: MysteryBoxClass
+		43: EE1Location
+		44: EE2Location
+		45: EE3Location
+		46: AnomalyLocation
+		47: EE1Active
+		48: EE2Active
+		49: EE3Active
+		50: EERingEffects
+		51: EE1Killcount
+		52: EE2Killcount
+		53: EE3Killcount
+		54: KillcountLimit
+		55: OpenAnomaly
+		56: BossBot
+		57: HasGameStarted
+		58: StartBossLocation
+		59: ActivateBoss
+		60: GameOverMenu
+		61: TimeElapsed
+		62: StartTimer
+		63: SpecialRoundEvents
+		64: VictoryLines
+		65: DidPlayersWin
+		66: WaveLimit
+		67: StartBonusEvent
+		68: Event
+		69: DisablePurchases
+		70: DefuseBomb
+		71: SpecialEventDescription
+		72: SpecialEventHUD
+		73: SpecialEventEffects
+		74: WaveIncrement
+		75: EnableSpecialEvents
+		76: BombDefuseLocationArray
+		77: ChosenBombDefuseLocation
+		78: ActivateEELocation
+		79: IsEEActivated
+		80: MysteryBoxReward
+		81: OrbsActivated
+		82: ChallengesLocation
+		83: Challenge
+		84: ChallengeEffects
+		85: IsChallengeActive
+		86: ChallengeTimer
+		87: ChallengeArea
+		88: RewardLocation
+		89: ChallengePrice
+		90: ChallengeMaxTime
+		91: UselessTips
+		92: ChosenTip
+		93: I
+		94: enemyTypeHandling
+		95: PowerupTimer
+		96: StartingPoints
+		97: PerkLossType
+		98: WeaponLossType
+		99: BossStarted
+		100: DebugMode
+		101: Parts
+		102: WorkbenchLoc
+		103: CanBuyBuildable
+		104: EnableBuildable
+		105: PartsLoc
+		106: HeroBuildable
+		107: ActivatedOrbs
+		108: PartEffectID
+		109: BuildablePrice
+		110: SecretEndPortalLocation
+		111: ShowBuildablesMenu
+		112: isGameEnding
+		113: bossAttackPhase
+		114: exfilLocation
+		115: exfilStartLocation
+		116: canExfil
+		117: exfilStarted
+		118: exfilRoundCounter
+		119: canEscapeExfil
+		120: exfilTimer
+		121: exfilRequirement
+		122: exfilKillCounter
+		123: ElimPointsType
+		124: EnableExfil
+		125: PAPLines
+		126: SecretPortalLocation
+		127: BarrierLines
+
+	player:
+		0: PingLocation
+		1: Points
+		2: Score
+		3: Perks
+		4: ElectricCherryReady
+		5: ChallengeScore
+		6: IfBotisStuck
+		7: SelfRevives
+		8: PackAPunched
+		9: RewardType
+		10: DeathmachineActive
+		11: PlayerReadiedUp
+		12: DeathmachineTimer
+		13: GodActive
+		14: GodTimer
+		15: BotTarget
+		16: OutOfBounds
+		17: Escaped
+		19: PAPLevel
+		20: usingCustomAbility
+		21: ElectricLevel
+		22: JuggLevel
+		23: StaminLevel
+		24: QuickLevel
+		26: backupIsDown
+		27: backupBeingRevived
+		28: backupRevivee
+		29: backupLastLocation
+		30: backupDownExpireTimer
+		31: backupReviveTimer
+		32: ReviveMaxTime
+		33: DeathMaxTime
+}
+
+subroutines
+{
+	1: RespawnDummy
+	2: NextRound
+	3: ElectricCherryEffects
+	5: ChangeTarget
+	7: SpawnEnemyPortals
+	8: DummyName
+}
+
+rule("Workshop Settings")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Global.PowerPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Power Price"), 5000, 1000, 10000, 0);
+		Global.MysteryBoxPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Mystery Box Price"), 950, 10, 5000, 1);
+		Global.QuickRevivePrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Quick Revive Price"), 1500, 1000, 10000,
+			2);
+		Global.StaminupPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Staminup Price"), 2000, 1000, 10000, 3);
+		Global.JuggernogPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Juggernog Price"), 2500, 1000, 10000, 4);
+		Global.ElectricCherryPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Electric Cherry Price"), 2000, 1000,
+			10000, 5);
+		Global.UpgradableLevels = Workshop Setting Integer(Custom String("General Settings"), Custom String("Max PAP Levels"), 5, 0, 99,
+			6);
+		Global.MaxPerkTiers = Workshop Setting Integer(Custom String("General Settings"), Custom String("Max Perk Levels"), 5, 0, 99, 6);
+		Global.PackAPunchPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Pack A Punch Price"), 5000, 500, 10000,
+			7);
+		Global.MysteryBoxClass = Workshop Setting Combo(Custom String("General Settings"), Custom String("Mystery Box Weapon Class"), 0,
+			Array(Custom String("Default"), Custom String("Snipers Only")), 0);
+		Global.KillcountLimit = Workshop Setting Integer(Custom String("Easter Egg"), Custom String("Soul Box Kill Limit"), 5, 0, 100, 0);
+		Global.WaveLimit = Workshop Setting Integer(Custom String("General Settings"), Custom String("Wave Limit - 0=None"), 0, 0, 100, 0);
+		Global.EnableSpecialEvents = Workshop Setting Toggle(Custom String("General Settings"), Custom String("Enable Special Waves"),
+			True, 0);
+		Global.ChallengePrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Challenge Machine Price"), 600, 500,
+			10000, 8);
+		Global.ChallengeMaxTime = Workshop Setting Integer(Custom String("General Settings"), Custom String("Challenge start timer"), 0,
+			100, 600, 0);
+		Global.PowerupTimer = Workshop Setting Integer(Custom String("General Settings"), Custom String("Powerup Max Time"), 60, 0, 120,
+			0);
+		Global.StartingPoints = Workshop Setting Integer(Custom String("General Settings"), Custom String("Starting Points"), 0, 0,
+			1000000, 0);
+		Global.PerkLossType = Workshop Setting Combo(Custom String("General Settings"), Custom String("Perk Loss Upon Death"), 0, Array(
+			Custom String("Last Bought Perk"), Custom String("All Perks"), Custom String("No Perks")), 0);
+		Global.WeaponLossType = Workshop Setting Combo(Custom String("General Settings"), Custom String("Weapon Loss Upon Death"), 0,
+			Array(Custom String("Keep Weapon"), Custom String("Back to Starter")), 0);
+		Global.BuildablePrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Buildables Price"), 2000, 500, 10000, 7);
+		Global.EnableBuildable = Workshop Setting Toggle(Custom String("General Settings"), Custom String("Enable Buildables"), True, 0);
+		Global.ElimPointsType = Workshop Setting Combo(Custom String("General Settings"), Custom String("Kill Reward Type"), 0, Array(
+			Custom String("Default - Damage gives points"), Custom String("Cold War - Only kills gives points")), 0);
+		Global.EnableExfil = Workshop Setting Toggle(Custom String("General Settings"), Custom String("Enable Exfil"), True, 0);
+		Global.exfilRequirement = Workshop Setting Integer(Custom String("General Settings"), Custom String("Exfil Kill Requirement"), 25,
+			5, 100, 0);
+		Global.enemyTypeHandling = Workshop Setting Combo(Custom String("General Settings"), Custom String("Enemy Type Handling"), 0,
+			Array(Custom String("Default - New Types over time"), Custom String("All Types at once"), Custom String("Only Omnics"),
+			Custom String("Only Ravagers"), Custom String("Only Boomyattas")), 0);
+	}
+}
+
+rule("Maps")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		If(Current Map == Map(Eichenwalde Halloween) || Current Map == Map(Eichenwalde));
+			Global.exfilStartLocation = Vector(77.768, 14.052, -90.757);
+			Global.exfilLocation = Vector(82.990, 14.004, -86.957);
+			Global.PartsLoc = Array(Vector(60.599, 6.042, -94.424), Vector(59.009, 13.900, -83.425), Vector(103.575, 13.999, -72.868));
+			Global.WorkbenchLoc = Vector(73.685, 14.217, -94.902);
+			Global.HeroBuildable = Hero(Brigitte);
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.BarrierRadius = 45;
+			Global.Barrier = Vector(82.901, Y Component Of(Global.Barrier) - 6, -86.310);
+			Global.PlayerSpawn = Vector(80.282, 14.002, -92.422);
+			Global.QuickReviveLocation = Vector(58.867, 8.273, -109.429);
+			Global.JugLocation = Vector(100.255, 14.041, -104.681);
+			Global.StaminLocation = Vector(57.861, 19.364, -82.995);
+			Global.ElectricLocation = Vector(79.317, 13.985, -72.247);
+			Global.PowerLocation = Vector(97.899, 14.052, -61.237);
+			Global.MysteryBox = Vector(70.911, 14.053, -104.055);
+			Global.EnemySpawns = Array(Vector(47.223, 9.752, -92), Vector(66.731, 17.220, -60.246), Vector(93.399, 14.041, -116.360), Vector(
+				88.539, 14.027, -66.493));
+			Global.PackAPunchLocation = Vector(75.250, 14.042, -50.939);
+			Global.EE1Location = Vector(52.385, 19.023, -102.326);
+			Global.EE2Location = Vector(83.951, 14.197, -103.130);
+			Global.EE3Location = Vector(102.537, 10.885, -91.327);
+			Global.AnomalyLocation = Vector(87.982, 13.971, -67.875);
+			Global.StartBossLocation = Vector(80.286, 14.077, -81.760);
+			Global.BombDefuseLocationArray = Array(Vector(103.407, 1.432, -46.990), Vector(103.407, 1.432, -46.990), Vector(103.407, 1.432,
+				-46.990));
+			Global.ActivateEELocation = Vector(96.314, 13.273, -50.852);
+			Global.RewardLocation = Vector(66.949, 13.977, -102.345);
+			Global.ChallengeArea = Vector(78.759, 14.237, -99.165);
+			Global.ChallengesLocation = Vector(64.393, 13.778, -101.312);
+		Else If(Current Map == Map(Havana));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.exfilStartLocation = Vector(123.420, 7.223, -28.439);
+			Global.exfilLocation = Vector(106.382, 8.345, -46.266);
+			Global.Barrier = Vector(139.520, Y Component Of(Global.Barrier) - 6, -46.467);
+			Global.PlayerSpawn = Vector(153.803, 11.488, -30.838);
+			Global.QuickReviveLocation = Vector(132.141, 11.629, -33.388);
+			Global.JugLocation = Vector(121.223, 7.320, -54.434);
+			Global.StaminLocation = Vector(143.585, 6.352, -18.829);
+			Global.ElectricLocation = Vector(124.279, 7.320, -32.899);
+			Global.PowerLocation = Vector(112.855, 8.235, -54.459);
+			Global.MysteryBox = Vector(141.631, 7.591, -53.880);
+			Global.EnemySpawns = Array(Vector(151.797, 10.486, -62.155), Vector(133.134, 7.320, -63.209), Vector(138.601, 6.262, -18.499),
+				Vector(97.449, 8.323, -46.066));
+			Global.PackAPunchLocation = Vector(127.357, 7.319, -28.040);
+			Global.EE1Location = Vector(124.363, 13.724, -62.147);
+			Global.EE2Location = Vector(122.752, 11.302, -31.456);
+			Global.EE3Location = Vector(112.884, 8.312, -36.244);
+			Global.AnomalyLocation = Vector(142.960, 7.384, -46.558);
+			Global.StartBossLocation = Vector(142.960, 7.384, -46.558);
+			Global.BombDefuseLocationArray = Array(Vector(89.368, 14.043, -59.500), Vector(60.791, 8.042, -72.333), Vector(0, 0, 0));
+			Global.ActivateEELocation = Vector(131.550, 7.320, -28.248);
+			Global.RewardLocation = Vector(131.163, 7.546, -35.744);
+			Global.ChallengeArea = Vector(106.324, 8.346, -45.985);
+			Global.ChallengesLocation = Vector(127.897, 7.330, -50.914);
+			Global.PartsLoc = Array(Vector(106.666, 1.044, -53.321), Vector(102.397, 2.858, -23.737), Vector(122.853, 7.559, -36.307));
+			Global.WorkbenchLoc = Vector(143.676, 7.405, -38.336);
+			Global.HeroBuildable = Hero(Zenyatta);
+			Global.BarrierRadius = 50;
+		Else If(Current Map == Map(Paris));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(-87.445, 13.327, -66.734);
+			Global.PlayerSpawn = Vector(-69.650, 12.027, -29.425);
+			Global.QuickReviveLocation = Vector(-49.538, 10.146, -53.259);
+			Global.JugLocation = Vector(-72.447, 12.320, -57.364);
+			Global.StaminLocation = Vector(-63.971, 14.321, -71.930);
+			Global.ElectricLocation = Vector(-113.951, 14.320, -81.377);
+			Global.PowerLocation = Vector(-105.715, 16.320, -103.776);
+			Global.MysteryBox = Vector(-85.032, 14.320, -106.503);
+			Global.EnemySpawns = Array(Vector(-121.355, 11.112, -58.202), Vector(-56.701, 14.321, -81.356), Vector(-99.395, 12.092, -36.853),
+				Vector(-122.636, 14.320, -89.119));
+			Global.exfilStartLocation = Vector(-100.119, 13.319, -66.147);
+			Global.exfilLocation = Vector(-71.659, 11.176, -34.932);
+			Global.PackAPunchLocation = Vector(-112.850, 11.320, -53.519);
+			Global.EE1Location = Vector(-81.839, 13.320, -77.377);
+			Global.EE2Location = Vector(-78.717, 16.319, -87.786);
+			Global.EE3Location = Vector(-113.043, 11.319, -69.017);
+			Global.AnomalyLocation = Vector(-99.886, 16.320, -92.372);
+			Global.StartBossLocation = Vector(-97.965, 13.322, -88.194);
+			Global.BombDefuseLocationArray = Array(Vector(-99.276, 13.321, -68.281), Vector(-59.746, 11.104, -50.866), Vector(-111.564, 12.333,
+				-40.524));
+			Global.ActivateEELocation = Vector(-72.184, 14.321, -79.180);
+			Global.RewardLocation = Vector(-85.294, 11.323, -41.081);
+			Global.ChallengeArea = Vector(-86.259, 13.319, -64.445);
+			Global.ChallengesLocation = Vector(-64.566, 11.323, -41.928);
+			Global.BarrierRadius = 50;
+			Global.PartsLoc = Array(Vector(-81.345, 11.383, -22.051), Vector(-109.840, 13.320, -91.536), Vector(-128.188, 11.319, -68.540));
+			Global.WorkbenchLoc = Vector(-126.263, 14.320, -89.939);
+			Global.HeroBuildable = Hero(Winston);
+		Else If(Current Map == Map(Blizzard World Winter) || Current Map == Map(Blizzard World));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(3.112, -0.482, -6.844);
+			Global.exfilStartLocation = Vector(13.600, -2.681, -12.494);
+			Global.exfilLocation = Vector(-12.675, -2.780, -26.884);
+			Global.PlayerSpawn = Vector(-12.720, -2.781, -29.415);
+			Global.QuickReviveLocation = Vector(-30.778, -0.681, -1.496);
+			Global.JugLocation = Vector(-20.957, -2.680, -19.152);
+			Global.StaminLocation = Vector(25.650, -2.680, -16.370);
+			Global.ElectricLocation = Vector(-25.761, -0.681, 12.935);
+			Global.PowerLocation = Vector(-23.206, -2.681, 4.934);
+			Global.MysteryBox = Vector(-24.384, -2.637, -2.264);
+			Global.EnemySpawns = Array(Vector(-19.106, -3.773, 14.869), Vector(-19.776, -2.779, -7.848), Vector(24.027, -2.779, -6.967),
+				Vector(2.863, 1.222, 20.219));
+			Global.PackAPunchLocation = Vector(3.003, 1.320, 6.221);
+			Global.EE1Location = Vector(-14.856, -0.680, 21.169);
+			Global.EE2Location = Vector(18.344, -3.778, 13.493);
+			Global.EE3Location = Vector(-13.059, -2.779, -14.746);
+			Global.AnomalyLocation = Vector(10.446, -2.680, -14.380);
+			Global.StartBossLocation = Vector(2.975, -3.781, 18.446);
+			Global.BombDefuseLocationArray = Array(Vector(-1.844, 1.217, 10.309), Vector(-5.062, -2.667, -1.856), Vector(9.943, -2.670,
+				-1.927));
+			Global.ActivateEELocation = Vector(-19.595, -2.681, 2.396);
+			Global.RewardLocation = Vector(-6.204, -2.680, -22.895);
+			Global.ChallengeArea = Vector(2.619, -2.779, -1.176);
+			Global.ChallengesLocation = Vector(-2.716, -2.679, -16.875);
+			Global.BarrierRadius = 45;
+			Global.PartsLoc = Array(Vector(-12.421, -2.782, -7.891), Vector(8.787, 1.320, 20.501), Vector(8.911, -3.281, 13.260));
+			Global.WorkbenchLoc = Vector(-26.268, -2.639, 1.314);
+			Global.HeroBuildable = Hero(Pharah);
+		Else If(Current Map == Map(Dorado));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(115.570, Y Component Of(Global.Barrier) - 6, 24.820);
+			Global.PlayerSpawn = Vector(147.497, 12.320, 30.978);
+			Global.QuickReviveLocation = Vector(108.023, 12.319, 37.230);
+			Global.JugLocation = Vector(123.741, 12.319, 38.806);
+			Global.StaminLocation = Vector(111.060, 12.401, 12.692);
+			Global.ElectricLocation = Vector(124.668, 8.569, -8.691);
+			Global.PowerLocation = Vector(133.522, 12.369, 36.115);
+			Global.MysteryBox = Vector(107.423, 12.401, 28.347);
+			Global.EnemySpawns = Array(Vector(134.222, 12.332, 47.438), Vector(124.626, 10.151, 1.443), Vector(133.747, 19.070, 9.881), Vector(
+				141.886, 11.320, 3.641), Vector(83.784, 8.046, -3.294), Vector(119.032, 8.344, -16.556), Vector(104.476, 19.331, 15.776));
+			Global.PackAPunchLocation = Vector(98.570, 14.315, 13.799);
+			Global.EE1Location = Vector(119.750, 19.318, 36.825);
+			Global.EE2Location = Vector(117.828, 19.251, 6.659);
+			Global.EE3Location = Vector(106.953, 12.402, 24.058);
+			Global.AnomalyLocation = Vector(131.011, 12.370, 26.064);
+			Global.StartBossLocation = Vector(113.444, 12.320, 48.604);
+			Global.BombDefuseLocationArray = Array(Vector(153.490, 12.258, 32.035), Vector(150.967, 11.332, 6.509), Vector(94.643, 19.330,
+				12.458));
+			Global.ActivateEELocation = Vector(138.326, 12.370, 18.737);
+			Global.RewardLocation = Vector(125.166, 12.320, 18.719);
+			Global.ChallengeArea = Vector(118.887, 12.186, 26.115);
+			Global.ChallengesLocation = Vector(129.989, 12.369, 15.761);
+			Global.BarrierRadius = 50;
+			Global.PartsLoc = Array(Vector(81.324, 15.270, 36.418), Vector(104.889, 13.498, 48.196), Vector(131.819, 11.357, 8.444));
+			Global.exfilStartLocation = Vector(116.878, 12.368, 44.730);
+			Global.exfilLocation = Vector(115.560, 9.054, -7.544);
+			Global.WorkbenchLoc = Vector(142.934, 12.319, 21.002);
+			Global.HeroBuildable = Hero(Ana);
+		Else If(Current Map == Map(Hanamura) || Current Map == Map(Hanamura Winter));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(-7.272, -6, -73.589);
+			Global.PlayerSpawn = Vector(4.102, 0.320, -69.411);
+			Global.QuickReviveLocation = Vector(-13.029, 2.320, -61.989);
+			Global.JugLocation = Vector(15.516, -3.680, -95.010);
+			Global.StaminLocation = Vector(8.767, 0.319, -75.772);
+			Global.ElectricLocation = Vector(14.882, 8.329, -85.896);
+			Global.PowerLocation = Vector(-8.655, 0.394, -74.818);
+			Global.MysteryBox = Vector(-4.031, 0.395, -93.479);
+			Global.EnemySpawns = Array(Vector(-19.835, 5.318, -57.111), Vector(8.185, -3.782, -87.763), Vector(-26.036, 2.319, -90.867),
+				Vector(-14.121, -3.780, -69.877), Vector(19.004, -0.606, -66.210));
+			Global.PackAPunchLocation = Vector(-0.309, -3.779, -74.292);
+			Global.EE1Location = Vector(5.642, 8.329, -89.533);
+			Global.EE2Location = Vector(4.956, 6.320, -69.699);
+			Global.EE3Location = Vector(-29.297, 2.320, -66.782);
+			Global.AnomalyLocation = Vector(-5.913, 0.395, -79.766);
+			Global.StartBossLocation = Vector(-37.575, 2.320, -63.399);
+			Global.BombDefuseLocationArray = Array(Vector(12.693, -3.681, -92.554), Vector(-19.336, 2.319, -93.355), Vector(-22.121, 2.319,
+				-59.281));
+			Global.ActivateEELocation = Vector(-16.994, 0.571, -90.862);
+			Global.RewardLocation = Vector(-13.203, 0.396, -95.596);
+			Global.ChallengeArea = Vector(-0.847, 1.180, -74.741);
+			Global.ChallengesLocation = Vector(-21.972, 0.395, -87.112);
+			Global.BarrierRadius = 35;
+			Global.PartsLoc = Array(Vector(-8.971, 4.318, -59.321), Vector(-0.795, -3.681, -69.834), Vector(-33.008, 2.319, -79.679));
+			Global.WorkbenchLoc = Vector(-1.247, 0.396, -82.565);
+			Global.HeroBuildable = Hero(Genji);
+			Global.exfilStartLocation = Vector(-18.515, 0.394, -72.170);
+			Global.exfilLocation = Vector(13.381, -0.378, -60.447);
+		Else If(Current Map == Map(King's Row) || Current Map == Map(King's Row Winter));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 0);
+			Global.Barrier = Vector(-19.472, 1.201, -32.899);
+			Global.PlayerSpawn = Vector(-28.052, 1.220, -24.004);
+			Global.QuickReviveLocation = Vector(-2.077, 1.298, -44.932);
+			Global.JugLocation = Vector(4.422, 1.383, -32.512);
+			Global.StaminLocation = Vector(-12.275, 1.370, -11.927);
+			Global.ElectricLocation = Vector(-48.922, 1.259, -24.884);
+			Global.PowerLocation = Vector(-30.765, 7.320, -50.920);
+			Global.MysteryBox = Vector(-8.378, 1.197, -26.986);
+			Global.EnemySpawns = Array(Vector(-18.873, 1.200, -4.823), Vector(-48.889, 1.154, -33.777), Vector(-28.892, 1.429, -17.022),
+				Vector(3.098, 1.381, -31.404), Vector(-23.422, 2.319, -56.182));
+			Global.PackAPunchLocation = Vector(-42.774, 1.415, -38.130);
+			Global.EE1Location = Vector(-33.534, 10.319, -34.384);
+			Global.EE2Location = Vector(-0.750, 1.209, -11.775);
+			Global.EE3Location = Vector(-7.041, 7.327, -40.715);
+			Global.AnomalyLocation = Vector(-18.993, 1.395, -36.809);
+			Global.StartBossLocation = Vector(-25.247, 1.372, -17.393);
+			Global.BombDefuseLocationArray = Array(Vector(2.234, 7.344, -44.845), Vector(0, 0, 0), Vector(0, 0, 0));
+			Global.ActivateEELocation = Vector(-19.152, 2.328, -13.509);
+			Global.RewardLocation = Vector(1.502, 1.359, -23.801);
+			Global.ChallengeArea = Vector(-18.742, 1.206, -32.934);
+			Global.ChallengesLocation = Vector(0.206, 1.392, -26.571);
+			Global.BarrierRadius = 35;
+			Global.PartsLoc = Array(Vector(11.378, 1.387, -20.966), Vector(-51.363, 1.411, -42.002), Vector(-11.044, 1.390, -35.119));
+			Global.WorkbenchLoc = Vector(-14.975, 2.322, -20.326);
+			Global.HeroBuildable = Hero(Tracer);
+			Global.exfilStartLocation = Vector(-28.687, 1.395, -29.721);
+			Global.exfilLocation = Vector(-48.785, 1.138, -33.077);
+		Else If(Current Map == Map(Junkertown));
+			Start Forcing Spawn Room(Team 1, 1);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(-18.384, 6.465, -32.227);
+			Global.PlayerSpawn = Vector(-19.409, 5.841, -39.176);
+			Global.QuickReviveLocation = Vector(10.472, 12.289, -46.050);
+			Global.JugLocation = Vector(-25.098, 6.316, -33.995);
+			Global.StaminLocation = Vector(8.340, 8.507, -36.569);
+			Global.ElectricLocation = Vector(7.721, 8.275, -51.670);
+			Global.PowerLocation = Vector(-8.496, 8.376, -56.048);
+			Global.MysteryBox = Vector(-5.553, 8.377, -53.356);
+			Global.EnemySpawns = Array(Vector(4.090, 8.048, -52.547), Vector(-9.909, 6.265, -28.569), Vector(-47.956, 6.282, -26.923), Vector(
+				-22.683, 6.064, -64.292), Vector(7.618, 8.391, -41.187));
+			Global.PackAPunchLocation = Vector(-26.385, 5.778, -53.588);
+			Global.EE1Location = Vector(12.078, 7.668, -27.752);
+			Global.EE2Location = Vector(-37.528, 5.396, -17.896);
+			Global.EE3Location = Vector(4.668, 13.566, -52.306);
+			Global.AnomalyLocation = Vector(-28.962, 7, -48.404);
+			Global.StartBossLocation = Vector(-36.014, 5.747, -57.125);
+			Global.BombDefuseLocationArray = Array(Vector(-25.704, 6.121, -28.297), Vector(-48.265, 10.808, -44.866), Vector(-7.702, 12.106,
+				-50.650));
+			Global.ActivateEELocation = Vector(-21.846, 6.242, -52.418);
+			Global.RewardLocation = Vector(-0.679, 7.963, -38.826);
+			Global.ChallengeArea = Vector(-18.303, 6.162, -35.523);
+			Global.ChallengesLocation = Vector(4.949, 8.089, -34.886);
+			Global.BarrierRadius = 35;
+			Global.PartsLoc = Array(Vector(-4.425, 2.850, -17.218), Vector(-41.887, 5.658, -21.919), Vector(12.721, 8.285, -43.346));
+			Global.WorkbenchLoc = Vector(-10.264, 7.502, -48.259);
+			Global.HeroBuildable = Hero(Junkrat);
+			Global.exfilStartLocation = Vector(-12.231, 6.277, -34.956);
+			Global.exfilLocation = Vector(-32.090, 5.748, -51.235);
+		Else If(Current Map == Map(New Junk City));
+			Start Forcing Spawn Room(Team 1, 0);
+			Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(0, 1, 0);
+			Global.PlayerSpawn = Vector(-20.682, 5.215, 0.009);
+			Global.QuickReviveLocation = Vector(7.353, 0.320, -14.994);
+			Global.JugLocation = Vector(-5.766, 0.319, -15.016);
+			Global.StaminLocation = Vector(-8.292, 0.324, 16.090);
+			Global.ElectricLocation = Vector(7.321, 0.325, 16.362);
+			Global.PowerLocation = Vector(-11.574, 5.360, -18.276);
+			Global.MysteryBox = Vector(-10.378, 5.361, 19.780);
+			Global.EnemySpawns = Array(Vector(1.897, 5.548, 23.364), Vector(2.232, 5.402, -22.297), Vector(-23.593, 6.318, -0.012), Vector(
+				2.072, 0.320, -25.444), Vector(2.469, 0.319, 25.230));
+			Global.PackAPunchLocation = Vector(-5.897, 1.466, -0.187);
+			Global.EE1Location = Vector(10.523, 5.344, 11.616);
+			Global.EE2Location = Vector(-10.297, 4.135, -0.139);
+			Global.EE3Location = Vector(11.481, 5.190, -10.497);
+			Global.AnomalyLocation = Vector(6.335, 5, 0.085);
+			Global.StartBossLocation = Vector(18.450, 0.349, 0.140);
+			Global.BombDefuseLocationArray = Array(Vector(-0.398, 5.340, -18.642), Vector(-9.300, 0.319, 23.653), Vector(-16.981, 5.361,
