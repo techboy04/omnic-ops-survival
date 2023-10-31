@@ -277,6 +277,7 @@ variables
 		38: IsAIBot
 		39: RepackAbility
 		40: repackAbilityReady
+		41: willRespawnAtStart
 }
 
 subroutines
@@ -288,6 +289,7 @@ subroutines
 	7: SpawnEnemyPortals
 	8: DummyName
 	9: RepackAbility
+	10: EMP
 }
 
 rule("Workshop Settings")
@@ -1108,7 +1110,7 @@ rule("Variables")
 		Global.Power = False;
 		Global.PerkLocations = Array(Global.JugLocation, Global.StaminLocation, Global.ElectricLocation, Global.QuickReviveLocation);
 		disabled Global.BarrierRadius = 45;
-		Global.DoublePointsActive = True;
+		Global.DoublePointsActive = False;
 		Global.RandomStartLines = Array(Custom String("Alright team, survive as long as possible!"), Custom String(
 			"Team, you need to survive as long as you can!"), Custom String(
 			"A large wave of Omnics are on their way! Keep your eyes open."));
@@ -1121,7 +1123,7 @@ rule("Variables")
 		Global.HeorWeapons = Array(Hero(Hanzo), Hero(Junkrat), Hero(Mei), Hero(Reaper), Hero(Cassidy), Hero(Sombra), Hero(Soldier: 76),
 			Hero(Echo), Hero(Sojourn), Hero(Ashe), Hero(Tracer), Hero(Symmetra), Hero(Doomfist), Hero(Junker Queen), Hero(Lúcio), Hero(
 			Genji), Hero(Reinhardt), Hero(Torbjörn), Hero(Widowmaker), Hero(Zarya), Hero(Wrecking Ball), Hero(Baptiste), Hero(Kiriko),
-			Hero(Lifeweaver), Hero(Roadhog), Hero(Sigma));
+			Hero(Lifeweaver), Hero(Roadhog), Hero(Sigma), Hero(Mercy), Hero(Moira), Hero(Zenyatta), Hero(Illari));
 		disabled Else If(Global.MysteryBoxClass == Custom String("Snipers Only"));
 		disabled Global.HeorWeapons = Array(Hero(Hanzo), Hero(Ashe), Hero(Widowmaker));
 		Global.HasGameStarted = False;
@@ -1133,7 +1135,9 @@ rule("Variables")
 			"Play challenges to unlock unique rewards!"), Custom String("Special waves occur every 5 waves"), Custom String(
 			"Dark portals show where the enemies will spawn"), Custom String("Some heroes give a better point advantage than others"),
 			Custom String("Multiple teammates can revive a downed teammate! This makes it quicker!"), Custom String(
-			"Downed alot? Try changing up your strategy!"), Custom String("Watch your six! Enemies could attack from anywhere!"));
+			"Downed alot? Try changing up your strategy!"), Custom String("Watch your six! Enemies could attack from anywhere!"),
+			Custom String("If youre downed you can crawl to a safe space for your teammates to revive you!"), Custom String(
+			"Everytime you Upgrade your weapon, you get a repack ability! It can also be rolled if you reached Max level!"));
 		Global.Parts = Array(Null, Null, Null);
 		Global.exfilRoundCounter = -5;
 		Global.exfilTimer = Global.exfilRequirement * 5;
@@ -1344,6 +1348,22 @@ rule("Custom HUD - Event Player")
 		Create Progress Bar HUD Text(Global.BossStarted && !Event Player.isHUDhidden ? Event Player : Null, Normalized Health(
 			Global.BossBot) * 100, Custom String("Boss Health"), Top, -1, Color(Red), Color(Red), Visible To Values and Color,
 			Default Visibility);
+		Create HUD Text(Entity Exists(Event Player) ? Remove From Array(Filtered Array(All Players(Team 1),
+			!Current Array Element.isHUDhidden), Event Player) : Null, Custom String("{2} {0}: {1}", Event Player, Event Player.Points,
+			Event Player.backupIsDown ? Icon String(Halo) : (Is Dead(Event Player) ? Icon String(Skull) : Hero Icon String(Hero Of(
+			Event Player)))), True ? Custom String("{0}     {1}     {2}", Event Player.PAPLevel == 0 ? Custom String("") : Custom String(
+			"{0}{1}", Icon String(Fire), Event Player.PAPLevel), Custom String("{0}     {1}", Array Contains(Event Player.Perks,
+			Custom String("QuickRevive")) ? Custom String("{0}{1}", Icon String(Halo), Event Player.QuickLevel) : Custom String(""),
+			Array Contains(Event Player.Perks, Custom String("Juggernog")) ? Custom String("{0}{1}", Icon String(Plus),
+			Event Player.JuggLevel) : Custom String("")), Custom String("{0}     {1}", Array Contains(Event Player.Perks, Custom String(
+			"ElectricCherry")) ? Custom String("{0}{1}", Icon String(Dizzy), Event Player.ElectricLevel) : Custom String(""),
+			Array Contains(Event Player.Perks, Custom String("StaminUp")) ? Custom String("{0}{1}", Icon String(Spiral),
+			Event Player.StaminLevel) : Custom String(""))) : Custom String(""), Event Player.backupIsDown ? Custom String("Downed - {0}",
+			Round To Integer(Event Player.backupDownExpireTimer, To Nearest)) : (Is Dead(Event Player) ? Custom String("Dead")
+			: Custom String("{1} {0}%", Round To Integer(Normalized Health(Event Player) * 100, To Nearest), Icon String(Heart))), Left,
+			11, Color(Red), Color(White), Is Dead(Event Player) || Event Player.backupIsDown ? Color(White) : (Normalized Health(
+			Event Player) > 0.750 ? Color(Green) : (Normalized Health(Event Player) <= 0.750 && Normalized Health(Event Player)
+			>= 0.450 ? Color(Yellow) : Color(Red))), Visible To String and Color, Default Visibility);
 		Create HUD Text(Global.ShowBuildablesMenu && !Event Player.isHUDhidden ? Event Player : Null, Custom String("{0}{1}{2}",
 			Array Contains(Global.Parts, Custom String("One")) ? Ability Icon String(Global.HeroBuildable, Button(Ability 1)) : Null,
 			Array Contains(Global.Parts, Custom String("Two")) ? Ability Icon String(Global.HeroBuildable, Button(Ability 2)) : Null,
@@ -1438,6 +1458,22 @@ rule("Custom HUD - Event Player")
 			Interact)), Input Binding String(Button(Crouch))), Count Of(Filtered Array(All Players(Team 1),
 			Current Array Element.exfilVote == True)), Number Of Players(Team 1)), Custom String("Someone wants to exfil!")), Null, Null,
 			Right, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+		disabled Create HUD Text(Entity Exists(Event Player) ? Remove From Array(Filtered Array(All Players(Team 1),
+			!Current Array Element.isHUDhidden), Event Player) : Null, Custom String("{2} {0}: {1}", Event Player, Event Player.Points,
+			Event Player.backupIsDown ? Icon String(Halo) : (Is Dead(Event Player) ? Icon String(Skull) : Hero Icon String(Hero Of(
+			Event Player)))), True ? Custom String("{0}     {1}     {2}", Event Player.PAPLevel == 0 ? Custom String("") : Custom String(
+			"{0}{1}", Icon String(Fire), Event Player.PAPLevel), Custom String("{0}     {1}", Array Contains(Event Player.Perks,
+			Custom String("QuickRevive")) ? Custom String("{0}{1}", Icon String(Halo), Event Player.QuickLevel) : Custom String(""),
+			Array Contains(Event Player.Perks, Custom String("Juggernog")) ? Custom String("{0}{1}", Icon String(Plus),
+			Event Player.JuggLevel) : Custom String("")), Custom String("{0}     {1}", Array Contains(Event Player.Perks, Custom String(
+			"ElectricCherry")) ? Custom String("{0}{1}", Icon String(Dizzy), Event Player.ElectricLevel) : Custom String(""),
+			Array Contains(Event Player.Perks, Custom String("StaminUp")) ? Custom String("{0}{1}", Icon String(Spiral),
+			Event Player.StaminLevel) : Custom String(""))) : Custom String(""), Event Player.backupIsDown ? Custom String("Downed") : (
+			Is Dead(Event Player) ? Custom String("Dead") : Custom String("{1} {0}%", Round To Integer(Normalized Health(Event Player)
+			* 100, To Nearest), Icon String(Heart))), Left, 11, Color(Red), Color(White), Is Dead(Event Player)
+			|| Event Player.backupIsDown ? Color(White) : (Normalized Health(Event Player) > 0.750 ? Color(Green) : (Normalized Health(
+			Event Player) <= 0.750 && Normalized Health(Event Player) >= 0.450 ? Color(Yellow) : Color(Red))), Visible To String and Color,
+			Default Visibility);
 		Create HUD Text(Event Player.backupIsDown && Is Alive(Event Player) && Global.ReviveSettings[1] ? Event Player : Null,
 			Custom String("{1}\r\n{0}", Custom String("{0} Previous - {2} - Next {1}", Input Binding String(Button(Secondary Fire)),
 			Input Binding String(Button(Primary Fire)), Index Of Array Value(Sorted Array(All Players(Team 1),
@@ -1455,29 +1491,14 @@ rule("Custom HUD - Event Player")
 		Event Player.ignoreMe = False;
 		Set Invisible(Event Player, None);
 		Event Player.Points = Global.StartingPoints;
-		Create HUD Text(Entity Exists(Event Player) ? Remove From Array(Filtered Array(All Players(Team 1),
-			!Current Array Element.isHUDhidden), Event Player) : Null, Custom String("{2} {0}: {1}", Event Player, Event Player.Points,
-			Event Player.backupIsDown ? Icon String(Halo) : (Is Dead(Event Player) ? Icon String(Skull) : Hero Icon String(Hero Of(
-			Event Player)))), True ? Custom String("{0}     {1}     {2}", Event Player.PAPLevel == 0 ? Custom String("") : Custom String(
-			"{0}{1}", Icon String(Fire), Event Player.PAPLevel), Custom String("{0}     {1}", Array Contains(Event Player.Perks,
-			Custom String("QuickRevive")) ? Custom String("{0}{1}", Icon String(Halo), Event Player.QuickLevel) : Custom String(""),
-			Array Contains(Event Player.Perks, Custom String("Juggernog")) ? Custom String("{0}{1}", Icon String(Plus),
-			Event Player.JuggLevel) : Custom String("")), Custom String("{0}     {1}", Array Contains(Event Player.Perks, Custom String(
-			"ElectricCherry")) ? Custom String("{0}{1}", Icon String(Dizzy), Event Player.ElectricLevel) : Custom String(""),
-			Array Contains(Event Player.Perks, Custom String("StaminUp")) ? Custom String("{0}{1}", Icon String(Spiral),
-			Event Player.StaminLevel) : Custom String(""))) : Custom String(""), Event Player.backupIsDown ? Custom String("Downed") : (
-			Is Dead(Event Player) ? Custom String("Dead") : Custom String("{1} {0}%", Round To Integer(Normalized Health(Event Player)
-			* 100, To Nearest), Icon String(Heart))), Left, 11, Color(Red), Color(White), Is Dead(Event Player)
-			|| Event Player.backupIsDown ? Color(White) : (Normalized Health(Event Player) > 0.750 ? Color(Green) : (Normalized Health(
-			Event Player) <= 0.750 && Normalized Health(Event Player) >= 0.450 ? Color(Yellow) : Color(Red))), Visible To String and Color,
-			Default Visibility);
-		Create HUD Text(Count Of(Global.Modifiers) > 0 ? Event Player : Null, Custom String(""), Custom String("Modifiers"), Custom String(
-			"{0}\r\n{1}\r\n{2}", Count Of(Global.Modifiers) > 0 ? Global.Modifiers[0] : Custom String(""), Count Of(Global.Modifiers)
-			> 1 ? Global.Modifiers[1] : Custom String(""), Count Of(Global.Modifiers) > 2 ? Global.Modifiers[2] : Custom String("")),
-			Right, -5, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
-		Create HUD Text(Event Player, Null, Custom String("Difficulty: {0}", Global.Difficulty == 0 ? Custom String("Normal") : (
-			Global.Difficulty == 1 ? Custom String("Hard") : Custom String("Expert"))), Null, Right, -4, Color(White), Color(Turquoise),
-			Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Count Of(Global.Modifiers) > 0 ? (Event Player.isHUDhidden ? Null : Event Player) : Null, Custom String(""),
+			Custom String("Modifiers"), Custom String("{0}\r\n{1}\r\n{2}", Count Of(Global.Modifiers)
+			> 0 ? Global.Modifiers[0] : Custom String(""), Count Of(Global.Modifiers) > 1 ? Global.Modifiers[1] : Custom String(""),
+			Count Of(Global.Modifiers) > 2 ? Global.Modifiers[2] : Custom String("")), Right, -5, Color(White), Color(White), Color(White),
+			Visible To and String, Default Visibility);
+		Create HUD Text(!Event Player.isHUDhidden ? Event Player : Null, Null, Custom String("Difficulty: {0}",
+			Global.Difficulty == 0 ? Custom String("Normal") : (Global.Difficulty == 1 ? Custom String("Hard") : Custom String("Expert"))),
+			Null, Right, -4, Color(White), Color(Turquoise), Color(White), Visible To and String, Default Visibility);
 		Wait Until(Is On Ground(Event Player), 99999);
 		Wait(0.250, Ignore Condition);
 		Event Player.ignoreMe = True;
@@ -1544,7 +1565,8 @@ rule("Barrier")
 
 	actions
 	{
-		If(Distance Between(Event Player, Global.Barrier) >= Global.BarrierRadius + 1);
+		If(Distance Between(Event Player, Global.Barrier) >= Global.BarrierRadius + 0);
+			Stop All Heal Over Time(Event Player);
 			Set Status(Team Of(Event Player) == Team 1 ? Event Player : Null, Null, Hacked, 3);
 			If(Event Player.OutOfBounds == False);
 				Small Message(Event Player, Custom String("{0}: {1}", Hero Icon String(Hero(Soldier: 76)), Random Value In Array(
@@ -1555,6 +1577,7 @@ rule("Barrier")
 			Damage(Event Player, Null, Team Of(Event Player) == Team 1 ? 50 : 10);
 		Else;
 			Event Player.OutOfBounds = False;
+			Start Heal Over Time(Team Of(Event Player) == Team 1 ? Event Player : 0, Null, 9999, Event Player.QuickLevel * 20 + 25);
 		End;
 		Wait(0.250, Ignore Condition);
 		Loop If Condition Is True;
@@ -1813,6 +1836,9 @@ rule("StartEnd Round")
 			Else If(Global.Event == Custom String("Purchases Disabled"));
 				Global.DisablePurchases = False;
 			Else If(Global.Event == Custom String("Defuse the Bomb"));
+				If(Global.DefuseBomb == True);
+					Call Subroutine(EMP);
+				End;
 				Global.DefuseBomb = False;
 				Destroy Effect(Global.SpecialEventEffects[0]);
 				Destroy Effect(Global.SpecialEventEffects[1]);
@@ -2695,6 +2721,7 @@ rule("Game Over Screen")
 		Destroy All In-World Text;
 		Destroy All HUD Text;
 		Wait(0.250, Ignore Condition);
+		Set Invisible(Event Player, All);
 		Create HUD Text(Count Of(Global.Modifiers) > 0 ? Event Player : Null, Custom String(""), Custom String("Modifiers"), Custom String(
 			"{0}\r\n{1}\r\n{2}", Count Of(Global.Modifiers) > 0 ? Global.Modifiers[0] : Custom String(""), Count Of(Global.Modifiers)
 			> 1 ? Global.Modifiers[1] : Custom String(""), Count Of(Global.Modifiers) > 2 ? Global.Modifiers[2] : Custom String("")), Top,
@@ -2784,7 +2811,8 @@ rule("Special Round")
 
 	actions
 	{
-		Global.Event = Random Value In Array(Remove From Array(Global.SpecialRoundEvents, Custom String("Defuse the Bomb")));
+		Global.Event = Remove From Array(Random Value In Array(Global.SpecialRoundEvents), Is True For All(Global.BombDefuseLocationArray,
+			Current Array Element == Vector(0, 0, 0)) ? Custom String("Defuse the Bomb") : Null);
 		Wait(0.250, Ignore Condition);
 		Big Message(All Players(All Teams), Custom String("BONUS EVENT: {0}", Global.Event));
 		If(Global.Event == Custom String("Low Gravity"));
@@ -2793,14 +2821,14 @@ rule("Special Round")
 		Else If(Global.Event == Custom String("Purchases Disabled"));
 			Global.DisablePurchases = True;
 			Global.SpecialEventDescription = Custom String("All Purchases are temperarily disabled");
-			disabled Else If(Global.Event == Custom String("Defuse the Bomb"));
-			disabled Global.ChosenBombDefuseLocation = Random Value In Array(Global.BombDefuseLocationArray);
-			disabled Global.DefuseBomb = True;
-			disabled Global.SpecialEventDescription = Custom String("Find and defuse a bomb before the round ends!");
-			disabled Create Effect(All Players(All Teams), Orb, Color(Black), Global.ChosenBombDefuseLocation, 0.500, Visible To Position and Radius);
-			disabled Global.SpecialEventEffects[0] = Last Created Entity;
-			disabled Create Effect(All Players(All Teams), Ring, Color(Black), Global.ChosenBombDefuseLocation, 3, Visible To Position and Radius);
-			disabled Global.SpecialEventEffects[1] = Last Created Entity;
+		Else If(Global.Event == Custom String("Defuse the Bomb"));
+			Global.ChosenBombDefuseLocation = Random Value In Array(Global.BombDefuseLocationArray);
+			Global.DefuseBomb = True;
+			Global.SpecialEventDescription = Custom String("Find and defuse a bomb before the round ends!");
+			Create Effect(All Players(All Teams), Orb, Color(Black), Global.ChosenBombDefuseLocation, 0.500, Visible To Position and Radius);
+			Global.SpecialEventEffects[0] = Last Created Entity;
+			Create Effect(All Players(All Teams), Ring, Color(Black), Global.ChosenBombDefuseLocation, 3, Visible To Position and Radius);
+			Global.SpecialEventEffects[1] = Last Created Entity;
 		End;
 		Wait(0.250, Ignore Condition);
 		Respawn(All Dead Players(Team 2));
@@ -2827,20 +2855,15 @@ rule("Defuse Bomb Event")
 
 	actions
 	{
+		Small Message(Event Player, Custom String("Defusing..."));
 		Wait(1, Abort When False);
-		Small Message(All Players(All Teams), Custom String("Defusing in 5..."));
-		Wait(1, Abort When False);
-		Small Message(All Players(All Teams), Custom String("Defusing in 4..."));
-		Wait(1, Abort When False);
-		Small Message(All Players(All Teams), Custom String("Defusing in 3..."));
-		Wait(1, Abort When False);
-		Small Message(All Players(All Teams), Custom String("Defusing in 2..."));
-		Wait(1, Abort When False);
-		Small Message(All Players(All Teams), Custom String("Defusing in 1..."));
-		Wait(1, Abort When False);
-		Small Message(All Players(All Teams), Custom String("Defused!"));
+		Small Message(Event Player, Custom String("Defused!"));
 		Destroy Effect(Global.SpecialEventEffects[0]);
 		Destroy Effect(Global.SpecialEventEffects[1]);
+		Global.DefuseBomb = False;
+		Set Ultimate Charge(All Players(Team 1), 100);
+		All Players(Team 1).Points += 250;
+		Event Player.Score += 500;
 	}
 }
 
@@ -3229,6 +3252,7 @@ rule("In spawn room")
 	{
 		Is Alive(Event Player) == True;
 		Global.MapSettingupMode == False;
+		Event Player.willRespawnAtStart == True;
 	}
 
 	actions
@@ -3242,6 +3266,7 @@ rule("In spawn room")
 		disabled End;
 		Wait(0.250, Ignore Condition);
 		Set Status(Event Player, Null, Invincible, 5);
+		Event Player.willRespawnAtStart = False;
 	}
 }
 
@@ -3625,7 +3650,6 @@ rule("Lobby Hud")
 	actions
 	{
 		Set Invisible(Event Player, All);
-		Preload Hero(Event Player, Hero(D.Va));
 		Create HUD Text(Event Player, Null, Custom String("Difficulty: {0}", Global.Difficulty == 0 ? Custom String("Normal") : (
 			Global.Difficulty == 1 ? Custom String("Hard") : Custom String("Expert"))), Null, Top, 2, Color(White), Color(Turquoise),
 			Color(White), Visible To and String, Default Visibility);
@@ -3655,7 +3679,7 @@ rule("Lobby Hud")
 		disabled Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
 			Null, Top, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("Check out all techs other codes! - techsgames.xyz"), Custom String(
-			"Version 1.14 - 10/29/2023"), Right, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			"Version 1.15 - 10/31/2023"), Right, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
 			Null, Right, -4, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Set Objective Description(Event Player, Custom String("Welcome to Omnic Ops Survival created by techdude04", Input Binding String(
@@ -3914,15 +3938,17 @@ rule("Boss Phase Change")
 		Global.bossAttackPhase = False;
 		Wait(10, Ignore Condition);
 		Global.bossAttackPhase = True;
-		Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE1Location, Team 1), Global.EE1Location, Null, To World, Damage,
-			Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
-			Global.BossBot, 1);
-		Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE2Location, Team 1), Global.EE2Location, Null, To World, Damage,
-			Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
-			Global.BossBot, 1);
-		Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE3Location, Team 1), Global.EE3Location, Null, To World, Damage,
-			Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
-			Global.BossBot, 1);
+		If(Count Of(Filtered Array(All Players(Team 1), !Current Array Element.backupIsDown && Is Dead(Current Array Element))) == 1);
+			Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE1Location, Team 1), Global.EE1Location, Null, To World, Damage,
+				Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
+				Global.BossBot, 1);
+			Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE2Location, Team 1), Global.EE2Location, Null, To World, Damage,
+				Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
+				Global.BossBot, 1);
+			Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE3Location, Team 1), Global.EE3Location, Null, To World, Damage,
+				Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
+				Global.BossBot, 1);
+		End;
 		Wait(10, Ignore Condition);
 		Loop If Condition Is True;
 	}
@@ -4793,7 +4819,7 @@ rule("Revive System - Revive Downed Player")
 		Team Of(Event Player) == Team 1;
 		Global.HasGameStarted == True;
 		Global.ShowGameStart == True;
-		Array Contains(Global.InGamePlayers, Event Player) == True;
+		disabled Array Contains(Global.InGamePlayers, Event Player) == True;
 	}
 
 	actions
@@ -4801,8 +4827,10 @@ rule("Revive System - Revive Downed Player")
 		"Begin Self Revive"
 		Event Player.backupRevivee = First Of(Sorted Array(Filtered Array(All Players(Team Of(Event Player)),
 			Current Array Element.backupIsDown), Distance Between(Event Player, Current Array Element)));
-		If(Is True For Any(Remove From Array(All Players(Team 1), Event Player),
+		If(Is True For All(Remove From Array(All Players(Team 1), Event Player),
 			Current Array Element.backupRevivee != Event Player.backupRevivee));
+			disabled If(Is True For Any(Remove From Array(All Players(Team 1), Event Player),
+				Current Array Element.backupRevivee != Event Player.backupRevivee));
 			Event Player.backupRevivee.backupBeingRevived = True;
 			Event Player.backupRevivee.backupReviveTimer = 0;
 			While(Event Player.backupRevivee.backupReviveTimer <= Event Player.ReviveMaxTime);
@@ -4879,7 +4907,7 @@ rule("Revive System - On Ground Location")
 		Is On Ground(Event Player) == True;
 		Is On Objective(Event Player) == False;
 		Is On Wall(Event Player) == False;
-		disabled Team Of(Event Player) == Team 1;
+		Team Of(Event Player) == Team 1;
 		Global.HasGameStarted == True;
 		Global.ShowGameStart == True;
 		Distance Between(Event Player, Global.Barrier) <= Global.BarrierRadius - 1;
@@ -5080,6 +5108,9 @@ rule("Revive System - Revive when Wave is Finished")
 		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Primary Fire));
 		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Secondary Fire));
 		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Melee));
+		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 1));
+		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 2));
+		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ultimate));
 	}
 }
 
@@ -5337,15 +5368,18 @@ rule("Revive System - Is Dead")
 
 	actions
 	{
-		Wait(0.016, Ignore Condition);
+		disabled Wait(0.016, Ignore Condition);
 		Event Player.spectatingIndex = Index Of Array Value(Sorted Array(All Players(Team 1),
 			Event Player == Current Array Element ? 100 : 0), Event Player);
 		If(Event Player.backupIsDown == False);
 			Resurrect(Event Player);
-			If(Is On Objective(Event Player) || Event Was Environment || Event Player.OutOfBounds);
+			If(Event Was Environment || Event Player.OutOfBounds);
 				Teleport(Event Player, Event Player.OutOfBounds ? Event Player.backupLastLocation : Nearest Walkable Position(Position Of(
 					Event Player)));
 			End;
+			Event Player.backupRevivee.backupBeingRevived = False;
+			Event Player.backupReviveTimer = 0;
+			Event Player.backupRevivee = Null;
 			Start Camera(Event Player, Ray Cast Hit Position(Sorted Array(All Players(Team 1), Event Player == Current Array Element ? 100 : 0)
 				[Event Player.spectatingIndex], Eye Position(Sorted Array(All Players(Team 1), Event Player == Current Array Element ? 100 : 0)
 				[Event Player.spectatingIndex]) + World Vector Of(Vector(1 * Min(-2.500 / 2.500, -0.750), 0, 0), Sorted Array(All Players(
@@ -5459,6 +5493,7 @@ rule("Revive System - Is Dead")
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 1));
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 2));
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ultimate));
+			Event Player.willRespawnAtStart = True;
 	}
 }
 
@@ -5523,18 +5558,23 @@ rule("Modifiers - Mystery Heroes")
 	conditions
 	{
 		Array Contains(Global.Modifiers, Custom String("Mystery Heroes")) == True;
-		Global.Wave > 0;
+		Global.Wave >= 0;
 	}
 
 	actions
 	{
-		Start Forcing Player To Be Hero(Event Player, Random Value In Array(Global.HeorWeapons));
-		If(Event Player.PAPLevel >= 1);
-			Set Max Ammo(Event Player, 0, Max Ammo(Event Player, 0) + Max Ammo(Event Player, 0));
-			Set Max Ammo(Event Player, 1, Max Ammo(Event Player, 1) + Max Ammo(Event Player, 1));
-			Set Ammo(Event Player, 0, Max Ammo(Event Player, 0));
-			Set Ammo(Event Player, 1, Max Ammo(Event Player, 1));
-		End;
+		Wait Until(Global.ZombiesLeft == 0, 99999);
+		Wait(5, Ignore Condition);
+		Start Forcing Player To Be Hero(Event Player, Random Value In Array(Filtered Array(Global.HeorWeapons, Hero Of(Event Player)
+			!= Current Array Element)));
+		disabled If(Event Player.PAPLevel >= 1);
+		disabled Set Max Ammo(Event Player, 0, Max Ammo(Event Player, 0) + Max Ammo(Event Player, 0));
+		disabled Set Max Ammo(Event Player, 1, Max Ammo(Event Player, 1) + Max Ammo(Event Player, 1));
+		disabled Set Ammo(Event Player, 0, Max Ammo(Event Player, 0));
+		disabled Set Ammo(Event Player, 1, Max Ammo(Event Player, 1));
+		disabled End;
+		Wait Until(Global.ZombiesLeft > 0, 99999);
+		Loop If Condition Is True;
 	}
 }
 
@@ -5555,8 +5595,8 @@ rule("Modifier - Security Measures")
 
 	actions
 	{
-		Wait(1, Abort When False);
 		Set Status(Event Player, Null, Hacked, 3);
+		Wait(1, Abort When False);
 		Loop If Condition Is True;
 	}
 }
@@ -5700,9 +5740,10 @@ rule("Repack Ability when Shooting")
 
 	conditions
 	{
-		(Is Firing Primary(Event Player) || Is Firing Secondary(Event Player)) == True;
+		disabled (Is Firing Primary(Event Player) || Is Firing Secondary(Event Player)) == True;
 		Event Player.repackAbilityReady == True;
 		Global.ReviveSettings[2] == True;
+		(Is Button Held(Event Player, Button(Primary Fire)) || True) == Is Button Held(Event Player, Button(Secondary Fire));
 	}
 
 	actions
@@ -5730,5 +5771,28 @@ rule("Repack Ability when Shooting")
 		End;
 		Event Player.repackAbilityReady = True;
 		Loop If Condition Is True;
+	}
+}
+
+rule("Map-wode EMP if Bomb Defusal fails")
+{
+	event
+	{
+		Subroutine;
+		EMP;
+	}
+
+	actions
+	{
+		Play Effect(Local Player, Sombra EMP Explosion Sound, Color(White), Position Of(Local Player), 100);
+		Play Effect(Local Player, DVa Self Destruct Explosion Sound, Color(White), Position Of(Local Player), 100);
+		Play Effect(All Players(All Teams), DVa Self Destruct Explosion Effect, Color(White), Global.ChosenBombDefuseLocation[0], 100);
+		Big Message(All Players(All Teams), Custom String("Bomb Defusal Failed! - An EMP has activated!"));
+		Set Status(All Players(Team 1), Null, Hacked, 10);
+		If(Global.Power);
+			Global.Power = 2;
+			Wait(30, Ignore Condition);
+			Global.Power = True;
+		End;
 	}
 }
