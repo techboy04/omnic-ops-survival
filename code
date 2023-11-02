@@ -30,19 +30,12 @@ settings
 				Ilios
 				Lijiang Tower
 				Lijiang Tower Lunar New Year
-				Nepal
 				New Queen Street
 				Oasis
 				Samoa
 				Shambali Monastery
 				Suravasa
-				Watchpoint: Gibraltar
 				Workshop Chamber
-				Workshop Expanse
-				Workshop Expanse Night
-				Workshop Green Screen
-				Workshop Island
-				Workshop Island Night
 			}
 		}
 
@@ -58,14 +51,6 @@ settings
 
 	heroes
 	{
-		Team 1
-		{
-			enabled heroes
-			{
-				D.Va
-			}
-		}
-
 		Team 2
 		{
 			Orisa
@@ -73,15 +58,6 @@ settings
 				Damage Received: 20%
 				Health: 500%
 				Projectile Speed: 95%
-			}
-		}
-
-		General
-		{
-			D.Va
-			{
-				Spawn Without Mech: On
-				Ultimate Ability Self-Destruct: Off
 			}
 		}
 	}
@@ -278,6 +254,7 @@ variables
 		39: RepackAbility
 		40: repackAbilityReady
 		41: willRespawnAtStart
+		42: restrictUlt
 }
 
 subroutines
@@ -308,11 +285,13 @@ rule("Workshop Settings")
 			100, -1);
 		Global.PowerPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Power Price"), 5000, 1000, 10000, 0);
 		Global.MysteryBoxPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Mystery Box Price"), 950, 10, 5000, 1);
-		Global.QuickRevivePrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Quick Revive Price"), 1500, 1000, 10000,
+		Global.QuickRevivePrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Vital Elixir Price"), 1500, 1000, 10000,
 			2);
-		Global.StaminupPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Staminup Price"), 2000, 1000, 10000, 3);
-		Global.JuggernogPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Juggernog Price"), 2500, 1000, 10000, 4);
-		Global.ElectricCherryPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Electric Cherry Price"), 2000, 1000,
+		Global.StaminupPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Swift Stride Price"), 2000, 1000, 10000,
+			3);
+		Global.JuggernogPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Ironclad Serum Price"), 2500, 1000, 10000,
+			4);
+		Global.ElectricCherryPrice = Workshop Setting Integer(Custom String("Prices"), Custom String("Frostbite Surge Price"), 2000, 1000,
 			10000, 5);
 		Global.UpgradableLevels = Workshop Setting Integer(Custom String("General Settings"), Custom String("Max PAP Levels"), 5, 0, 99,
 			6);
@@ -980,6 +959,35 @@ rule("Maps 2")
 			Global.HeroBuildable = Hero(Winston);
 			Global.exfilLocation = Vector(75.693, -1.852, -0.903);
 			Global.exfilStartLocation = Vector(73.454, 2.321, 22.275);
+		Else If(Is True For Any(Array(Map(Workshop Chamber), Map(Workshop Expanse), Map(Workshop Expanse Night), Map(
+				Workshop Green Screen), Map(Workshop Island), Map(Workshop Island Night)), Current Map == Current Array Element));
+			Global.Barrier = Vector(0, Y Component Of(Global.Barrier) - 6, 0);
+			Global.PlayerSpawn = Vector(0, 0, 0);
+			Global.QuickReviveLocation = Vector(-17.500, 1.550, 9.500);
+			Global.JugLocation = Vector(-17.500, 1.550, 2);
+			Global.StaminLocation = Vector(-10, 1.550, 18);
+			Global.ElectricLocation = Vector(-2, 1.550, 17.500);
+			Global.PowerLocation = Vector(-17.500, 1.550, 17.500);
+			Global.MysteryBox = Vector(17.500, 1.550, 17.500);
+			Global.EnemySpawns = Array(Vector(0, 1.550, -16));
+			Global.PackAPunchLocation = Vector(18.500, 1.550, -18.500);
+			Global.EE1Location = Vector(18.500, 1.550, 0);
+			Global.EE2Location = Vector(18.500, 1.550, 8);
+			Global.EE3Location = Vector(18.500, 1.550, -8);
+			Global.AnomalyLocation = Vector(0, 1.550, 12);
+			Global.StartBossLocation = Vector(0, 1.550, 17.500);
+			Global.BombDefuseLocationArray = Array(Vector(-9.028, 1.508, -8.550));
+			Global.ActivateEELocation = Vector(-17.500, 1.550, -6.500);
+			Global.RewardLocation = Vector(6, 1.274, -17.500);
+			Global.ChallengeArea = Vector(0, 0, 0);
+			Global.ChallengesLocation = Vector(14, 1.274, -17.500);
+			Global.BarrierRadius = Is True For Any(Array(Map(Workshop Expanse Night), Map(Workshop Expanse)),
+				Current Array Element == Current Map) ? 50 : 0;
+			Global.PartsLoc = Array(Vector(-13.500, 1.274, -18), Vector(-10.500, 1.274, -18.500), Vector(-5.500, 1.275, -18));
+			Global.WorkbenchLoc = Vector(-17.500, 1.275, -18);
+			Global.HeroBuildable = Hero(D.Va);
+			Global.exfilLocation = Vector(0, 0, 0);
+			Global.exfilStartLocation = Vector(10.500, 1.550, 17.500);
 	}
 }
 
@@ -1123,7 +1131,8 @@ rule("Variables")
 		Global.HeorWeapons = Array(Hero(Hanzo), Hero(Junkrat), Hero(Mei), Hero(Reaper), Hero(Cassidy), Hero(Sombra), Hero(Soldier: 76),
 			Hero(Echo), Hero(Sojourn), Hero(Ashe), Hero(Tracer), Hero(Symmetra), Hero(Doomfist), Hero(Junker Queen), Hero(Lúcio), Hero(
 			Genji), Hero(Reinhardt), Hero(Torbjörn), Hero(Widowmaker), Hero(Zarya), Hero(Wrecking Ball), Hero(Baptiste), Hero(Kiriko),
-			Hero(Lifeweaver), Hero(Roadhog), Hero(Sigma), Hero(Mercy), Hero(Moira), Hero(Zenyatta), Hero(Illari));
+			Hero(Lifeweaver), Hero(Roadhog), Hero(Sigma), Hero(Mercy), Hero(Moira), Hero(Zenyatta), Hero(Illari), Hero(D.Va), Hero(
+			Bastion), Hero(Ramattra));
 		disabled Else If(Global.MysteryBoxClass == Custom String("Snipers Only"));
 		disabled Global.HeorWeapons = Array(Hero(Hanzo), Hero(Ashe), Hero(Widowmaker));
 		Global.HasGameStarted = False;
@@ -1179,7 +1188,7 @@ rule("Spawn Effects")
 	actions
 	{
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
-			Custom String("Buy Quick Revive - {0} Points", Global.QuickRevivePrice), Vector(X Component Of(Global.QuickReviveLocation),
+			Custom String("Buy Vital Elixir - {0} Points", Global.QuickRevivePrice), Vector(X Component Of(Global.QuickReviveLocation),
 			Y Component Of(Global.QuickReviveLocation) - 0.500, Z Component Of(Global.QuickReviveLocation)), 1, Clip Against Surfaces,
 			Visible To Position and String, Color(Aqua), Default Visibility);
 		Create Effect(All Players(All Teams), Ring, Global.Power == True ? Color(Aqua) : Color(Gray), Global.QuickReviveLocation, 1,
@@ -1209,9 +1218,9 @@ rule("Spawn Effects")
 			X Component Of(Global.WorkbenchLoc), Y Component Of(Global.WorkbenchLoc) - 0.500, Z Component Of(Global.WorkbenchLoc)), 1,
 			Clip Against Surfaces, Visible To Position and String, Color(Aqua), Default Visibility);
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
-			Custom String("Buy Juggernog - {0} Points", Global.JuggernogPrice), Vector(X Component Of(Global.JugLocation), Y Component Of(
-			Global.JugLocation) - 0.500, Z Component Of(Global.JugLocation)), 1, Clip Against Surfaces, Visible To Position and String,
-			Color(Red), Default Visibility);
+			Custom String("Buy Ironclad Serum - {0} Points", Global.JuggernogPrice), Vector(X Component Of(Global.JugLocation),
+			Y Component Of(Global.JugLocation) - 0.500, Z Component Of(Global.JugLocation)), 1, Clip Against Surfaces,
+			Visible To Position and String, Color(Red), Default Visibility);
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
 			Icon String(Plus), Global.JugLocation, 2, Do Not Clip, Visible To Position and String, Color(Red), Default Visibility);
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
@@ -1226,12 +1235,12 @@ rule("Spawn Effects")
 			Icon String(Fire), Global.PackAPunchLocation, 2, Do Not Clip, Visible To Position and String, Color(Sky Blue),
 			Default Visibility);
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
-			Custom String("Buy Electric Cherry - {0} Points", Global.ElectricCherryPrice), Vector(X Component Of(Global.ElectricLocation),
+			Custom String("Buy Frostbite Surge - {0} Points", Global.ElectricCherryPrice), Vector(X Component Of(Global.ElectricLocation),
 			Y Component Of(Global.ElectricLocation) - 0.500, Z Component Of(Global.ElectricLocation)), 1, Clip Against Surfaces,
 			Visible To Position and String, Color(Turquoise), Default Visibility);
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
-			Custom String("Buy Staminup - {0} Points", Global.StaminupPrice), Vector(X Component Of(Global.StaminLocation), Y Component Of(
-			Global.StaminLocation) - 0.500, Z Component Of(Global.StaminLocation)), 1, Clip Against Surfaces,
+			Custom String("Buy Swift Stride - {0} Points", Global.StaminupPrice), Vector(X Component Of(Global.StaminLocation),
+			Y Component Of(Global.StaminLocation) - 0.500, Z Component Of(Global.StaminLocation)), 1, Clip Against Surfaces,
 			Visible To Position and String, Color(Orange), Default Visibility);
 		Create In-World Text(Global.Power == True ? Filtered Array(All Players(All Teams), !Current Array Element.isHUDhidden) : Null,
 			Custom String("Upgrade your Weapon - {0} Points", Global.PackAPunchPrice), Vector(X Component Of(Global.PackAPunchLocation),
@@ -1302,7 +1311,13 @@ rule("Custom HUD - Event Player")
 
 	actions
 	{
+		Start Forcing Player To Be Hero(Event Player, Hero(D.Va));
 		Wait(0.250, Ignore Condition);
+		If(Hero Of(Event Player) == Hero(D.Va));
+			Set Ultimate Ability Enabled(Event Player, False);
+			Damage(Event Player, Null, 100000);
+			Event Player.restrictUlt = True;
+		End;
 		Create HUD Text(Event Player.isHUDhidden ? Null : Event Player, Global.WaveLimit == 0 ? Custom String("Wave {0}", Global.Wave)
 			: Custom String("Wave {0}/{1}", Global.Wave, Global.WaveLimit), Global.StartBonusEvent ? Global.Event : Custom String(""),
 			Global.StartBonusEvent ? Global.SpecialEventDescription : Custom String(""), Left, 0, Color(White), Color(White), Color(White),
@@ -1315,6 +1330,17 @@ rule("Custom HUD - Event Player")
 			: Event Player.PAPLevel, Event Player.RepackAbility == Null ? Custom String(" ") : Custom String("- {0}",
 			Event Player.RepackAbility)) : Custom String("")) : Custom String(""), Left, 10, Color(Rose), Color(White), Color(White),
 			Visible To and String, Default Visibility);
+		Create HUD Text(Event Player.isHUDhidden ? Null : Event Player, Null, Null, Custom String("{0}\r\n{1}", Custom String("{0}\r\n{1}",
+			Array Contains(Event Player.Perks, Custom String("QuickRevive")) ? Custom String("Vital Elixir - Tier {0}",
+			Event Player.QuickLevel >= Global.MaxPerkTiers ? Custom String("MAX") : Event Player.QuickLevel) : Custom String(" "),
+			Array Contains(Event Player.Perks, Custom String("Juggernog")) ? Custom String("Ironclad Serum - Tier {0}",
+			Event Player.JuggLevel >= Global.MaxPerkTiers ? Custom String("MAX") : Event Player.JuggLevel) : Custom String(" ")),
+			Custom String("{0}\r\n{1}", Array Contains(Event Player.Perks, Custom String("ElectricCherry")) ? Custom String(
+			"Frostbite Surge - Tier {0}", Event Player.ElectricLevel >= Global.MaxPerkTiers ? Custom String("MAX")
+			: Event Player.ElectricLevel) : Custom String(" "), Array Contains(Event Player.Perks, Custom String("StaminUp"))
+			? Custom String("Swift Stride - Tier {0}", Event Player.StaminLevel >= Global.MaxPerkTiers ? Custom String("MAX")
+			: Event Player.StaminLevel) : Custom String(" "))), Left, 6, Color(Gray), Color(White), Color(White), Visible To and String,
+			Default Visibility);
 		Create HUD Text(Event Player.isHUDhidden ? Null : Event Player, Custom String("Enemies Left: {0}",
 			Global.BossStarted ? Icon String(Question Mark) : Global.ZombiesLeft), Global.ZombiesLeft == 1 ? Custom String(
 			"Distance - {0}", Distance Between(Event Player, All Living Players(Team 2))) : Custom String(""), Null, Left, 3, Color(Red),
@@ -1391,17 +1417,6 @@ rule("Custom HUD - Event Player")
 		Event Player.PAPLevel = 0;
 		disabled Disable Nameplates(All Players(Team 2), Event Player);
 		Disable Game Mode HUD(Event Player);
-		Create HUD Text(Event Player.isHUDhidden ? Null : Event Player, Null, Null, Custom String("{0}\r\n{1}", Custom String("{0}\r\n{1}",
-			Array Contains(Event Player.Perks, Custom String("QuickRevive")) ? Custom String("Quick Revive - Tier {0}",
-			Event Player.QuickLevel >= Global.MaxPerkTiers ? Custom String("MAX") : Event Player.QuickLevel) : Custom String(" "),
-			Array Contains(Event Player.Perks, Custom String("Juggernog")) ? Custom String("Juggernog - Tier {0}",
-			Event Player.JuggLevel >= Global.MaxPerkTiers ? Custom String("MAX") : Event Player.JuggLevel) : Custom String(" ")),
-			Custom String("{0}\r\n{1}", Array Contains(Event Player.Perks, Custom String("ElectricCherry")) ? Custom String(
-			"Electric Cherry - Tier {0}", Event Player.ElectricLevel >= Global.MaxPerkTiers ? Custom String("MAX")
-			: Event Player.ElectricLevel) : Custom String(" "), Array Contains(Event Player.Perks, Custom String("StaminUp"))
-			? Custom String("Staminup - Tier {0}", Event Player.StaminLevel >= Global.MaxPerkTiers ? Custom String("MAX")
-			: Event Player.StaminLevel) : Custom String(" "))), Left, 6, Color(Gray), Color(White), Color(White), Visible To and String,
-			Default Visibility);
 		Start Healing Modification(Event Player, All Players(All Teams), Event Player.OutOfBounds ? 0 : 100,
 			Receivers Healers and Healing Percent);
 		Create Effect(Is True For Any(All Players(Team Of(Event Player)),
@@ -1561,12 +1576,12 @@ rule("Barrier")
 		Event Player.Escaped == False;
 		Is Alive(Event Player) == True;
 		Global.BossBot != Event Player;
+		Global.BarrierRadius != 0;
 	}
 
 	actions
 	{
 		If(Distance Between(Event Player, Global.Barrier) >= Global.BarrierRadius + 0);
-			Stop All Heal Over Time(Event Player);
 			Set Status(Team Of(Event Player) == Team 1 ? Event Player : Null, Null, Hacked, 3);
 			If(Event Player.OutOfBounds == False);
 				Small Message(Event Player, Custom String("{0}: {1}", Hero Icon String(Hero(Soldier: 76)), Random Value In Array(
@@ -1575,9 +1590,9 @@ rule("Barrier")
 			Event Player.OutOfBounds = True;
 			Wait(1, Ignore Condition);
 			Damage(Event Player, Null, Team Of(Event Player) == Team 1 ? 50 : 10);
+			Stop All Heal Over Time(Event Player);
 		Else;
 			Event Player.OutOfBounds = False;
-			Start Heal Over Time(Team Of(Event Player) == Team 1 ? Event Player : 0, Null, 9999, Event Player.QuickLevel * 20 + 25);
 		End;
 		Wait(0.250, Ignore Condition);
 		Loop If Condition Is True;
@@ -1606,8 +1621,12 @@ rule("MysteryBox")
 	{
 		If(Event Player.Points >= 950);
 			Event Player.Points -= 950;
-			Start Forcing Player To Be Hero(Event Player, Random Value In Array(Filtered Array(Global.HeorWeapons, Hero Of(Event Player)
-				!= Global.HeroBuildable && Hero Of(Event Player) != Current Array Element)));
+			If(Hero Of(Event Player) == Hero(D.Va) && Event Player.restrictUlt);
+				Event Player.restrictUlt = False;
+				Set Ultimate Ability Enabled(Event Player, True);
+			End;
+			Start Forcing Player To Be Hero(Event Player, Random Value In Array(Filtered Array(Global.HeorWeapons,
+				Current Array Element != Global.HeroBuildable && Hero Of(Event Player) != Current Array Element)));
 			If(Event Player.PAPLevel >= 1 && Is True For All(Array(Hero(Kiriko), Hero(Lifeweaver)), Hero Of(Event Player)
 				!= Current Array Element));
 				Set Max Ammo(Event Player, 0, Max Ammo(Event Player, 0) + Max Ammo(Event Player, 0));
@@ -1639,6 +1658,10 @@ rule("Give Points - Kill")
 		If(Global.ElimPointsType == 0);
 			Event Player.Points += 100;
 			Event Player.Score += 100;
+			If(Event Was Critical Hit || Is Meleeing(Event Player));
+				Event Player.Points += 60;
+				Event Player.Score += 60;
+			End;
 			If(Global.DoublePointsActive == True);
 				Event Player.Points += 100;
 				Event Player.Score += 100;
@@ -2681,10 +2704,16 @@ rule("Boss Dies")
 
 	actions
 	{
+		Start Camera(All Players(All Teams), Ray Cast Hit Position(Eye Position(Global.BossBot), Eye Position(Global.BossBot)
+			+ Facing Direction Of(Global.BossBot) * 10, Null, All Players(All Teams), True) + Vector(0, 5, 0), Eye Position(
+			Global.BossBot), 0);
+		Set Slow Motion(50);
+		Wait(2, Ignore Condition);
+		Set Slow Motion(100);
 		Global.StartDirector = False;
 		Start Forcing Player To Be Hero(All Players(Team 1), Array(Null));
 		Resurrect(All Players(Team 1));
-		Big Message(All Players(All Teams), Custom String("BOSS IS DEAD"));
+		Big Message(All Players(All Teams), Custom String("Mission Accomplished! - Anomaly Sealed!"));
 		Destroy All Effects;
 		Destroy All HUD Text;
 		Destroy All In-World Text;
@@ -2811,8 +2840,8 @@ rule("Special Round")
 
 	actions
 	{
-		Global.Event = Remove From Array(Random Value In Array(Global.SpecialRoundEvents), Is True For All(Global.BombDefuseLocationArray,
-			Current Array Element == Vector(0, 0, 0)) ? Custom String("Defuse the Bomb") : Null);
+		Global.Event = Random Value In Array(Remove From Array(Global.SpecialRoundEvents, Is True For All(Global.BombDefuseLocationArray,
+			Current Array Element == Vector(0, 0, 0)) ? Custom String("Defuse the Bomb") : Null));
 		Wait(0.250, Ignore Condition);
 		Big Message(All Players(All Teams), Custom String("BONUS EVENT: {0}", Global.Event));
 		If(Global.Event == Custom String("Low Gravity"));
@@ -2822,7 +2851,7 @@ rule("Special Round")
 			Global.DisablePurchases = True;
 			Global.SpecialEventDescription = Custom String("All Purchases are temperarily disabled");
 		Else If(Global.Event == Custom String("Defuse the Bomb"));
-			Global.ChosenBombDefuseLocation = Random Value In Array(Global.BombDefuseLocationArray);
+			Global.ChosenBombDefuseLocation = Nearest Walkable Position(Random Value In Array(Global.BombDefuseLocationArray));
 			Global.DefuseBomb = True;
 			Global.SpecialEventDescription = Custom String("Find and defuse a bomb before the round ends!");
 			Create Effect(All Players(All Teams), Orb, Color(Black), Global.ChosenBombDefuseLocation, 0.500, Visible To Position and Radius);
@@ -2911,9 +2940,10 @@ rule("QuickRevive Effects")
 	conditions
 	{
 		Global.MapSettingupMode == False;
-		Event Player.OutOfBounds == False;
+		disabled Event Player.OutOfBounds == False;
 		disabled Health(Event Player) != Max Health(Event Player);
-		Team Of(Event Player) == (Global.Difficulty > 0 ? All Teams : Team 1);
+		Team Of(Event Player) == (Global.Difficulty == 0 ? Team 1 : Team Of(Event Player));
+		Global.BossBot != Event Player;
 	}
 
 	actions
@@ -3507,6 +3537,7 @@ rule("Teleport in Dummy Bot on Spawn")
 
 	actions
 	{
+		Set Invisible(Event Player, All);
 		Event Player.BotTarget = Random Value In Array(Filtered Array(All Players(Team 1), (
 			!Current Array Element.backupIsDown || Is Alive(Current Array Element)) && !Current Array Element.ignoreMe));
 		If(Global.BossBot != Event Player);
@@ -3519,6 +3550,7 @@ rule("Teleport in Dummy Bot on Spawn")
 				Current Array Element))));
 		End;
 		Call Subroutine(DummyName);
+		Set Invisible(Event Player, None);
 	}
 }
 
@@ -3679,7 +3711,7 @@ rule("Lobby Hud")
 		disabled Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
 			Null, Top, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("Check out all techs other codes! - techsgames.xyz"), Custom String(
-			"Version 1.15 - 10/31/2023"), Right, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			"Version 1.16 - 11/2/2023"), Right, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
 			Null, Right, -4, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Set Objective Description(Event Player, Custom String("Welcome to Omnic Ops Survival created by techdude04", Input Binding String(
@@ -3863,6 +3895,10 @@ rule("Buy Part")
 		Else;
 			If(Event Player.Points >= Global.BuildablePrice);
 				If(Hero Of(Event Player) != Global.HeroBuildable);
+					If(Hero Of(Event Player) == Hero(D.Va) && Event Player.restrictUlt);
+						Event Player.restrictUlt = False;
+						Set Ultimate Ability Enabled(Event Player, True);
+					End;
 					Start Forcing Player To Be Hero(Event Player, Global.HeroBuildable);
 					Event Player.Points -= Global.BuildablePrice;
 					If(Event Player.PAPLevel >= 1 && Is True For All(Array(Hero(Kiriko), Hero(Lifeweaver)), Hero Of(Event Player)
@@ -4648,38 +4684,37 @@ disabled rule("Map Template")
 
 	actions
 	{
+		Else If(Is True For Any(Array(Map(Workshop Chamber), Map(Workshop Expanse), Map(Workshop Expanse Night), Map(
+			Workshop Green Screen), Map(Workshop Island), Map(Workshop Island Night)), Current Map == Current Array Element));
 		disabled Start Forcing Spawn Room(Team 1, 0);
 		disabled Start Forcing Spawn Room(Team 2, 1);
-		Else If(Current Map == Map(Watchpoint: Gibraltar));
-		Global.Barrier = Vector(66.480, 2.320, 34.688);
-		Global.PlayerSpawn = Vector(64.636, 1.883, 22.224);
-		Global.QuickReviveLocation = Vector(45.088, 2.318, 18.711);
-		Global.JugLocation = Vector(61.739, 2.319, -5.324);
-		Global.StaminLocation = Vector(80.364, -1.681, 7.445);
-		Global.ElectricLocation = Vector(82.732, 2.329, 22.670);
-		Global.PowerLocation = Vector(82.194, 2.322, 11.839);
-		Global.MysteryBox = Vector(77.127, 0.380, 47.558);
-		Global.EnemySpawns = Array(Vector(79.079, -1.862, -5.968), Vector(53.493, 2.319, -6.219), Vector(51.799, 4.319, 3.062), Vector(
-			52.456, 10.318, 6.562), Vector(50.592, 3.622, 32.524), Vector(63.205, 2.319, 49.134), Vector(83.130, 2.318, 57.814), Vector(
-			98.857, 0.378, 39.341), Vector(100.779, 2.318, 15.530), Vector(69.516, 11.289, 24.765));
-		Global.PackAPunchLocation = Vector(57.910, 1.844, 19.984);
-		Global.EE1Location = Vector(68.246, 2.323, 41.958);
-		Global.EE2Location = Vector(78.619, 10.326, 19.880);
-		Global.EE3Location = Vector(85.207, 0.351, 31.553);
-		Global.AnomalyLocation = Vector(82.221, 0.839, 39.757);
-		Global.StartBossLocation = Vector(85.638, -1.674, 5.192);
-		Global.BombDefuseLocationArray = Array(Vector(82.591, -1.677, 10.055), Vector(54.334, 3.104, 20.105), Vector(92.093, 0.379,
-			35.573));
-		Global.ActivateEELocation = Vector(60.594, 2.324, 33.482);
-		Global.RewardLocation = Vector(39.479, 4.321, 8.297);
-		Global.ChallengeArea = Vector(65.052, 1.885, 22.964);
-		Global.ChallengesLocation = Vector(47.692, 4.323, 12.562);
-		Global.BarrierRadius = 45;
-		Global.PartsLoc = Array(Vector(90.113, 2.329, 14.558), Vector(71.242, 2.360, 58.216), Vector(75.998, -1.877, -6.984));
-		Global.WorkbenchLoc = Vector(53.985, 2.320, 0.247);
-		Global.HeroBuildable = Hero(Winston);
-		Global.exfilLocation = Vector(75.693, -1.852, -0.903);
-		Global.exfilStartLocation = Vector(73.454, 2.321, 22.275);
+		Global.Barrier = Vector(0, Y Component Of(Global.Barrier) - 6, 0);
+		Global.PlayerSpawn = Vector(0, 0, 0);
+		Global.QuickReviveLocation = Vector(-17.500, 1.550, 9.500);
+		Global.JugLocation = Vector(-17.500, 1.550, 2);
+		Global.StaminLocation = Vector(-10, 1.550, 18);
+		Global.ElectricLocation = Vector(-2, 1.550, 17.500);
+		Global.PowerLocation = Vector(-17.500, 1.550, 17.500);
+		Global.MysteryBox = Vector(17.500, 1.550, 17.500);
+		Global.EnemySpawns = Array(Vector(0, 1.550, -16));
+		Global.PackAPunchLocation = Vector(18.500, 1.550, -18.500);
+		Global.EE1Location = Vector(18.500, 1.550, 0);
+		Global.EE2Location = Vector(18.500, 1.550, 8);
+		Global.EE3Location = Vector(18.500, 1.550, -8);
+		Global.AnomalyLocation = Vector(0, 1.550, 12);
+		Global.StartBossLocation = Vector(0, 1.550, 17.500);
+		Global.BombDefuseLocationArray = Array(Vector(-9.028, 1.508, -8.550));
+		Global.ActivateEELocation = Vector(-17.500, 1.550, -6.500);
+		Global.RewardLocation = Vector(6, 1.274, -17.500);
+		Global.ChallengeArea = Vector(0, 0, 0);
+		Global.ChallengesLocation = Vector(14, 1.274, -17.500);
+		Global.BarrierRadius = Is True For Any(Array(Map(Workshop Expanse Night), Map(Workshop Expanse)),
+			Current Array Element == Current Map) ? 50 : 0;
+		Global.PartsLoc = Array(Vector(-13.500, 1.274, -18), Vector(-10.500, 1.274, -18.500), Vector(-5.500, 1.275, -18));
+		Global.WorkbenchLoc = Vector(-17.500, 1.275, -18);
+		Global.HeroBuildable = Hero(D.Va);
+		Global.exfilLocation = Vector(0, 0, 0);
+		Global.exfilStartLocation = Vector(10.500, 1.550, 17.500);
 	}
 }
 
@@ -4820,6 +4855,7 @@ rule("Revive System - Revive Downed Player")
 		Global.HasGameStarted == True;
 		Global.ShowGameStart == True;
 		disabled Array Contains(Global.InGamePlayers, Event Player) == True;
+		Is Alive(Event Player) == True;
 	}
 
 	actions
@@ -5740,10 +5776,10 @@ rule("Repack Ability when Shooting")
 
 	conditions
 	{
-		disabled (Is Firing Primary(Event Player) || Is Firing Secondary(Event Player)) == True;
+		(Is Firing Primary(Event Player) || Is Firing Secondary(Event Player)) == True;
 		Event Player.repackAbilityReady == True;
 		Global.ReviveSettings[2] == True;
-		(Is Button Held(Event Player, Button(Primary Fire)) || True) == Is Button Held(Event Player, Button(Secondary Fire));
+		disabled (Is Button Held(Event Player, Button(Primary Fire)) || True) == Is Button Held(Event Player, Button(Secondary Fire));
 	}
 
 	actions
@@ -5794,5 +5830,29 @@ rule("Map-wode EMP if Bomb Defusal fails")
 			Wait(30, Ignore Condition);
 			Global.Power = True;
 		End;
+	}
+}
+
+rule("Inbounds Heal")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global.MapSettingupMode == False;
+		Event Player.OutOfBounds == True;
+		disabled Health(Event Player) != Max Health(Event Player);
+		Team Of(Event Player) == (Global.Difficulty > 0 ? All Teams : Team 1);
+	}
+
+	actions
+	{
+		Wait Until(!Event Player.OutOfBounds, 99999);
+		Start Heal Over Time(Event Player, Null, 9999, Event Player.QuickLevel * 20 + 25);
 	}
 }
