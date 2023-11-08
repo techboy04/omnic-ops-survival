@@ -23,7 +23,6 @@ settings
 		{
 			disabled maps
 			{
-				Antarctic Peninsula
 				Busan
 				Colosseo
 				Esperança
@@ -58,14 +57,6 @@ settings
 				Damage Received: 20%
 				Health: 500%
 				Projectile Speed: 95%
-			}
-		}
-
-		General
-		{
-			disabled heroes
-			{
-				Mauga
 			}
 		}
 	}
@@ -118,7 +109,6 @@ variables
 		24: Modifiers
 		25: BossReadyTimer
 		26: RequireInteractToRevive
-		27: InGamePlayers
 		28: VotingEnabled
 		29: EnemyTypes
 		30: QuickRevivePrice
@@ -277,6 +267,8 @@ subroutines
 	10: EMP
 	11: BossStartSequence
 	12: SpawnBoss
+	13: LastPlayerrDowned
+	14: StartExfil
 }
 
 rule("Workshop Settings")
@@ -319,7 +311,7 @@ rule("Workshop Settings")
 			100, 600, 0);
 		Global.PowerupTimer = Workshop Setting Integer(Custom String("General Settings"), Custom String("Powerup Max Time"), 60, 0, 120,
 			0);
-		Global.StartingPoints = Workshop Setting Integer(Custom String("General Settings"), Custom String("Starting Points"), 0, 0,
+		Global.StartingPoints = Workshop Setting Integer(Custom String("General Settings"), Custom String("Starting Points"), 500, 0,
 			1000000, 0);
 		Global.PerkLossType = Workshop Setting Combo(Custom String("General Settings"), Custom String("Perk Loss Upon Death"), 0, Array(
 			Custom String("Last Bought Perk"), Custom String("All Perks"), Custom String("No Perks")), 0);
@@ -356,7 +348,10 @@ rule("Workshop Settings")
 		Global.ReviveSettings = Array(Workshop Setting Toggle(Custom String("General Settings"), Custom String(
 			"Enable Crawling when downed"), True, 0), Workshop Setting Toggle(Custom String("General Settings"), Custom String(
 			"Enable Spectating when downed"), False, 0), Workshop Setting Toggle(Custom String("General Settings"), Custom String(
-			"Enable Repack Abilities"), True, 0));
+			"Enable Repack Abilities"), True, 0), Workshop Setting Toggle(Custom String("Story EE Settings"), Custom String(
+			"Toggle Instructions - HUD Text"), False, 1), Workshop Setting Toggle(Custom String("Story EE Settings"), Custom String(
+			"Toggle Instructions - Icons"), False, 2), Workshop Setting Toggle(Custom String("Story EE Settings"), Custom String(
+			"Toggle Instructions - Dialogue"), True, 3));
 		Global.MapSettingupMode = False;
 	}
 }
@@ -998,6 +993,36 @@ rule("Maps 2")
 			Global.HeroBuildable = Hero(D.Va);
 			Global.exfilLocation = Vector(0, 0, 0);
 			Global.exfilStartLocation = Vector(10.500, 1.550, 17.500);
+		Else If(Current Map == Map(Antarctic Peninsula));
+			disabled Start Forcing Spawn Room(Team 1, 0);
+			disabled Start Forcing Spawn Room(Team 2, 1);
+			Global.Barrier = Vector(269.524, 41.172, 160.103);
+			Global.PlayerSpawn = Vector(270.107, 45.192, 178.072);
+			Global.QuickReviveLocation = Vector(261.877, 39.191, 179.255);
+			Global.JugLocation = Vector(266.811, 39.283, 177.329);
+			Global.StaminLocation = Vector(273.177, 39.281, 177.329);
+			Global.ElectricLocation = Vector(279.238, 39.192, 178.790);
+			Global.PowerLocation = Vector(285.670, 42.191, 149.209);
+			Global.MysteryBox = Vector(269.889, 41.278, 153.698);
+			Global.EnemySpawns = Array(Vector(291.464, 45.086, 154.748), Vector(278.697, 46.025, 179.005), Vector(248.860, 43.214, 166.872),
+				Vector(281.623, 42.194, 142.428));
+			Global.PackAPunchLocation = Vector(269.951, 45.192, 180.987);
+			Global.EE1Location = Vector(289.647, 42.975, 166.466);
+			Global.EE2Location = Vector(263.548, 45.194, 175.063);
+			Global.EE3Location = Vector(257.808, 42.189, 152.155);
+			Global.AnomalyLocation = Vector(269.764, 45.195, 154.782);
+			Global.StartBossLocation = Vector(269.967, 42.786, 143.020);
+			Global.BombDefuseLocationArray = Array(Vector(250.538, 45.477, 148.997), Vector(289.784, 45.484, 149.557));
+			Global.ActivateEELocation = Vector(269.867, 41.280, 163.699);
+			Global.RewardLocation = Vector(280.429, 41.473, 168.522);
+			Global.ChallengeArea = Vector(269.652, 41.479, 160.078);
+			Global.ChallengesLocation = Vector(258.709, 41.812, 168.460);
+			Global.BarrierRadius = 25;
+			Global.PartsLoc = Array(Vector(286.562, 43.122, 169.109), Vector(261.341, 47.381, 180.449), Vector(262.485, 43.559, 142.944));
+			Global.WorkbenchLoc = Vector(248.075, 45.221, 155.162);
+			Global.HeroBuildable = Hero(Mei);
+			Global.exfilLocation = Vector(248.763, 43.413, 169.200);
+			Global.exfilStartLocation = Vector(282.957, 42.414, 159.942);
 	}
 }
 
@@ -1256,10 +1281,10 @@ rule("Spawn Effects")
 			Custom String("Upgrade your Weapon - {0} Points", Global.PackAPunchPrice), Vector(X Component Of(Global.PackAPunchLocation),
 			Y Component Of(Global.PackAPunchLocation) - 0.500, Z Component Of(Global.PackAPunchLocation)), 1, Clip Against Surfaces,
 			Visible To Position and String, Color(Sky Blue), Default Visibility);
-		Create Effect(Global.OrbsActivated == 3 ? All Players(All Teams) : Null, Good Aura, Color(Purple), Global.StartBossLocation, 1,
+		Create Effect(Global.OrbsActivated == 3 ? All Players(All Teams) : Null, Orb, Color(Purple), Global.StartBossLocation, 1,
 			Visible To Position and Radius);
 		Create In-World Text(Global.OrbsActivated == 3 ? All Players(All Teams) : Null, Custom String(
-			"Start Final Battle - There is no turning back!"), Global.StartBossLocation, 1, Clip Against Surfaces,
+			"Open the Anomaly - There is no turning back!"), Global.StartBossLocation, 1, Clip Against Surfaces,
 			Visible To Position and String, Color(Purple), Default Visibility);
 		Create Effect(Global.OrbsActivated == 3 ? All Players(All Teams) : Null, Ring, Color(Purple), Global.StartBossLocation, 3,
 			Visible To Position and Radius);
@@ -1299,6 +1324,32 @@ rule("Spawn Effects")
 		Create Effect(All Players(All Teams), Sphere, Color(Violet), Global.Barrier, Global.BarrierRadius, Visible To Position and Radius);
 		Create Effect(Global.Power == True && Global.IsEEActivated == False ? All Players(All Teams) : Null, Heal Target Effect, Color(
 			Turquoise), Global.ActivateEELocation, 0.500, Visible To Position and Radius);
+		"Power Icon"
+		Create Icon(!Global.Power && Global.Wave > 0 && Global.HasGameStarted && Global.ReviveSettings[4] == True ? All Players(All Teams)
+			: Null, Global.PowerLocation, Diamond, Visible To and Position, Color(Lime Green), True);
+		"Aura Icon"
+		Create Icon(Global.Power && !Global.IsEEActivated && Global.ReviveSettings[4] == True ? All Players(All Teams) : Null,
+			Global.ActivateEELocation, Diamond, Visible To and Position, Color(Lime Green), True);
+		"EE1 Icon"
+		Create Icon(Global.Power && !Global.EE1Active && !(Count Of(Filtered Array(Global.ActivatedOrbs, Current Array Element == True))
+			== 3) && Global.IsEEActivated && Global.ReviveSettings[4] == True ? All Players(All Teams) : Null, Global.EE1Location, Diamond,
+			Visible To and Position, Color(Lime Green), True);
+		"EE1 Icon"
+		Create Icon(Global.Power && !Global.EE2Active && !(Count Of(Filtered Array(Global.ActivatedOrbs, Current Array Element == True))
+			== 3) && Global.IsEEActivated && Global.ReviveSettings[4] == True ? All Players(All Teams) : Null, Global.EE2Location, Diamond,
+			Visible To and Position, Color(Lime Green), True);
+		"EE1 Icon"
+		Create Icon(Global.Power && !Global.EE3Active && !(Count Of(Filtered Array(Global.ActivatedOrbs, Current Array Element == True))
+			== 3) && Global.IsEEActivated && Global.ReviveSettings[4] == True ? All Players(All Teams) : Null, Global.EE3Location, Diamond,
+			Visible To and Position, Color(Lime Green), True);
+		"Anomaly Activation"
+		Create Icon(Count Of(Filtered Array(Global.ActivatedOrbs, Current Array Element == True))
+			== 3 && !Global.BossStarted && True && Global.IsEEActivated && Global.ReviveSettings[4] == True ? All Players(All Teams)
+			: Null, Global.StartBossLocation, Diamond, Visible To and Position, Color(Lime Green), True);
+		"Boss Icon"
+		Create Icon(Count Of(Filtered Array(Global.ActivatedOrbs, Current Array Element == True))
+			== 3 && Global.BossStarted && !Local Player.isHUDhidden && Global.IsEEActivated && Global.ReviveSettings[4] == True ? All Players(
+			All Teams) : Null, Global.BossBot, Diamond, Visible To and Position, Color(Lime Green), True);
 	}
 }
 
@@ -1321,6 +1372,8 @@ rule("Custom HUD - Event Player")
 
 	actions
 	{
+		Event Player.backupLastLocation = Global.PlayerSpawn;
+		Teleport(Event Player, Global.PlayerSpawn);
 		Start Forcing Player To Be Hero(Event Player, Hero(D.Va));
 		Wait(0.250, Ignore Condition);
 		If(Hero Of(Event Player) == Hero(D.Va));
@@ -1412,7 +1465,7 @@ rule("Custom HUD - Event Player")
 			Players Within Radius(Global.exfilLocation, 5, Team 1, Off), Is Alive(Current Array Element)
 			|| !Current Array Element.backupIsDown)), Count Of(Filtered Array(All Players(Team 1), Is Alive(Current Array Element)
 			|| !Current Array Element.backupIsDown))) : Custom String("{0}/{1}", Global.exfilKillCounter, Global.exfilRequirement), Right,
-			3, Color(Aqua), Color(White), Color(White), Visible To and String, Default Visibility);
+			5, Color(Aqua), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create Effect(Is Dead(Event Player) ? Null : (Event Player.OutOfBounds ? Event Player : Null), Cloud, Color(Purple), Eye Position(
 			Event Player), 5, Visible To Position and Radius);
 		Create HUD Text(Event Player.OutOfBounds && !Event Player.isHUDhidden ? Event Player : Null, Custom String(
@@ -1461,12 +1514,11 @@ rule("Custom HUD - Event Player")
 			Event Player.backupRevivee), Top, 0, Color(Yellow), Color(Yellow), Visible To Values and Color, Default Visibility);
 		Disable Built-In Game Mode Respawning(Event Player);
 		Disable Movement Collision With Players(Event Player);
-		Event Player.PlayerReadiedUp = False;
 		Create HUD Text(Global.BossReadyTimer == 0 || Global.BossStarted == True ? Null : Event Player, Custom String("{2}\r\n{1} - {0}",
 			Global.BossReadyTimer, Custom String("Hold {0} to vote - {1}/{2}", Custom String("{0}+{1}", Input Binding String(Button(
 			Interact)), Input Binding String(Button(Crouch))), Count Of(Filtered Array(All Players(Team 1),
 			Current Array Element.PlayerReadiedUp == True)), Number Of Players(Team 1)), Custom String("Someone wants to start the boss")),
-			Null, Null, Right, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Null, Null, Right, 7, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Event Player.Perks = Empty Array;
 		If(Global.RequireInteractToRevive);
 			Create HUD Text(Count Of(Filtered Array(All Players(Team 1), Distance Between(Current Array Element, Event Player)
@@ -1482,7 +1534,7 @@ rule("Custom HUD - Event Player")
 			Global.exfilReadyTimer, Custom String("Hold {0} to vote - {1}/{2}", Custom String("{0}+{1}", Input Binding String(Button(
 			Interact)), Input Binding String(Button(Crouch))), Count Of(Filtered Array(All Players(Team 1),
 			Current Array Element.exfilVote == True)), Number Of Players(Team 1)), Custom String("Someone wants to exfil!")), Null, Null,
-			Right, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Right, 6, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		disabled Create HUD Text(Entity Exists(Event Player) ? Remove From Array(Filtered Array(All Players(Team 1),
 			!Current Array Element.isHUDhidden), Event Player) : Null, Custom String("{2} {0}: {1}", Event Player, Event Player.Points,
 			Event Player.backupIsDown ? Icon String(Halo) : (Is Dead(Event Player) ? Icon String(Skull) : Hero Icon String(Hero Of(
@@ -1516,6 +1568,16 @@ rule("Custom HUD - Event Player")
 		Event Player.ignoreMe = False;
 		Set Invisible(Event Player, None);
 		Event Player.Points = Global.StartingPoints;
+		Create HUD Text(!Event Player.isHUDhidden && Global.ReviveSettings[3] == True ? Event Player : Null, Null, Null, Custom String(
+			"{0}\r\n{1}\r\nObjective:", Custom String(" "), Custom String(" ")), Right, 3, Color(White), Color(White), Color(Violet),
+			Visible To and String, Default Visibility);
+		Create HUD Text(!Event Player.isHUDhidden && Global.ReviveSettings[3] == True ? Event Player : Null, Null, Global.Wave > 0 ? (
+			Global.Power ? (Global.IsEEActivated ? (Count Of(Filtered Array(Global.ActivatedOrbs, Current Array Element == True)) == 3 ? (
+			Global.BossStarted ? Custom String("Defeat the Boss and contain the Anomaly") : Custom String("Activate the Anomaly"))
+			: Custom String("Find a way to fuel up the orbs {0}/3", Count Of(Filtered Array(Global.ActivatedOrbs,
+			Current Array Element == True)))) : Custom String("Find and activate the aura with [{0}]", Input Binding String(Button(
+			Interact)))) : Custom String("Turn on the power")) : Custom String("Complete the wave for further instructions"), Null, Right,
+			4, Color(White), Color(Rose), Color(Purple), Visible To String and Color, Default Visibility);
 		Create HUD Text(Count Of(Global.Modifiers) > 0 ? (Event Player.isHUDhidden ? Null : Event Player) : Null, Custom String(""),
 			Custom String("Modifiers"), Custom String("{0}\r\n{1}\r\n{2}", Count Of(Global.Modifiers)
 			> 0 ? Global.Modifiers[0] : Custom String(""), Count Of(Global.Modifiers) > 1 ? Global.Modifiers[1] : Custom String(""),
@@ -1524,11 +1586,15 @@ rule("Custom HUD - Event Player")
 		Create HUD Text(!Event Player.isHUDhidden ? Event Player : Null, Null, Custom String("Difficulty: {0}",
 			Global.Difficulty == 0 ? Custom String("Normal") : (Global.Difficulty == 1 ? Custom String("Hard") : Custom String("Expert"))),
 			Null, Right, -4, Color(White), Color(Turquoise), Color(White), Visible To and String, Default Visibility);
-		Wait Until(Is On Ground(Event Player), 99999);
-		Wait(0.250, Ignore Condition);
-		Event Player.ignoreMe = True;
-		Wait Until(Throttle Of(Event Player) != Vector(0, 0, 0), 99999);
-		Event Player.ignoreMe = False;
+		If(Event Player.PlayerReadiedUp == True);
+			Event Player.PlayerReadiedUp = False;
+		Else;
+			Wait Until(Is On Ground(Event Player), 99999);
+			Wait(0.250, Ignore Condition);
+			Event Player.ignoreMe = True;
+			Wait Until(Throttle Of(Event Player) != Vector(0, 0, 0), 99999);
+			Event Player.ignoreMe = False;
+		End;
 	}
 }
 
@@ -1734,7 +1800,6 @@ rule("Start Game")
 		Global.HasGameStarted = True;
 		Wait(15, Ignore Condition);
 		Destroy All HUD Text;
-		Global.InGamePlayers = All Players(Team 1);
 		Enable Hero HUD(All Players(All Teams));
 		Enable Messages(All Players(All Teams));
 		Global.ShowGameStart = True;
@@ -1833,15 +1898,15 @@ rule("Bot Dies from Player")
 			Global.exfilKillCounter += 1;
 		End;
 		Global.ZombiesLeft -= 1;
-		If(Global.ZombiesLeft < Number Of Players(Team 2));
-			Disable Built-In Game Mode Respawning(Event Player);
-		Else;
+		If(Global.ZombiesLeft >= Number Of Players(Team 2));
 			Enable Built-In Game Mode Respawning(All Players(Team 2));
 			Wait(5, Ignore Condition);
 			Respawn(Victim);
+		Else;
+			Disable Built-In Game Mode Respawning(Event Player);
 		End;
 		If(Global.ZombiesLeft == 0);
-			Call Subroutine(NextRound);
+			Start Rule(NextRound, Do Nothing);
 		End;
 	}
 }
@@ -1860,7 +1925,7 @@ rule("StartEnd Round")
 			disabled Destroy All Dummy Bots;
 			Small Message(All Players(All Teams), Custom String("{0}: \"Portal is opened! Get in before its destroyed!\"", Hero Icon String(
 				Hero(Ana))));
-			Respawn(Filtered Array(All Dead Players(Team 1), Array Contains(Global.InGamePlayers, Current Array Element)));
+			Respawn(All Dead Players(Team 1));
 			Small Message(All Players(All Teams), Custom String("Exfil Completed!"));
 			Global.canEscapeExfil = True;
 		Else;
@@ -1879,12 +1944,25 @@ rule("StartEnd Round")
 			Play Effect(All Players(All Teams), Buff Impact Sound, Color(White), Global.Barrier, 100);
 			Global.StartBonusEvent = False;
 			Big Message(All Players(All Teams), Custom String("Wave Completed"));
-			Respawn(Filtered Array(All Dead Players(Team 1), Array Contains(Global.InGamePlayers, Current Array Element)));
-			Wait(5, Ignore Condition);
-			If(Global.WaveLimit != 0);
-				If(Global.Wave == Global.WaveLimit);
-					Global.GameOverMenu = True;
-				End;
+			Respawn(All Dead Players(Team 1));
+			If(Global.Wave == 0);
+				Small Message(Global.ReviveSettings[5] ? All Players(All Teams) : Null, Custom String("{0}: \"{1}\"", Hero Icon String(Hero(
+					Winston)), Random Value In Array(Array(Custom String("My investigations show that there is a strange anomaly located here."),
+					Custom String("My research tells me an anomaly is here."), Custom String(
+					"If I recall, an anomaly is somewhere around here.")))));
+				Wait(3, Ignore Condition);
+				Small Message(Global.ReviveSettings[5] ? All Players(All Teams) : Null, Custom String("{0}: \"{1}\"", Hero Icon String(Hero(
+					Soldier: 76)), Random Value In Array(Array(Custom String("Before we do that, we need to turn the power on."), Custom String(
+					"In order for us to go further, we need to turn the power on."), Custom String(
+					"Hold up! We need to turn the power on first!")))));
+				Wait(3, Ignore Condition);
+			Else;
+				Wait(5, Ignore Condition);
+			End;
+			If(Global.Wave == Global.WaveLimit && Global.WaveLimit != 0);
+				Global.canExfil = True;
+				disabled Global.GameOverMenu = True;
+				Call Subroutine(StartExfil);
 			Else;
 				Global.Wave += 1;
 				Global.WaveIncrement += 1;
@@ -2145,6 +2223,15 @@ rule("Power Animation")
 			Visible To Position Radius and Color);
 		Wait(1, Ignore Condition);
 		Big Message(All Players(All Teams), Custom String("Power is on! Perks are activated!"));
+		Wait(2, Ignore Condition);
+		Small Message(Global.ReviveSettings[5] == True ? All Players(All Teams) : Null, Custom String("{0}: \"{1}\"", Hero Icon String(
+			Hero(Winston)), Random Value In Array(Array(Custom String("Find any clues to help us contain the breach."), Custom String(
+			"Athena mentioned a clue around here, perhaps the power helped."), Custom String(
+			"The power seemed to have activated a clue, but where is it?")))));
+		Wait(3, Ignore Condition);
+		Small Message(Global.ReviveSettings[5] == True ? All Players(All Teams) : Null, Custom String("{0}: \"{1}\"", Hero Icon String(
+			Hero(Ana)), Random Value In Array(Array(Custom String("This clue may help us contain the breach."), Custom String(
+			"One step closer to containing the breach."), Custom String("This may be something that could help us!")))));
 	}
 }
 
@@ -2423,9 +2510,9 @@ rule("All EE is done")
 			Visible To Position and Radius);
 		disabled Global.EERingEffects[5] = Last Created Entity;
 		Global.ActivateBoss = True;
-		Small Message(All Players(All Teams), Custom String("{1}: \"{0}\"", Random Value In Array(Array(Custom String(
-			"We getting somewhere!"), Custom String("This looks good!"), Custom String("The strange thing is opened, look out team."))),
-			Hero Icon String(Hero(Soldier: 76))));
+		Small Message(Global.ReviveSettings[5] == True ? All Players(All Teams) : Null, Custom String("{1}: \"{0}\"",
+			Random Value In Array(Array(Custom String("We're getting somewhere!"), Custom String("This looks good!"), Custom String(
+			"The Anomaly is opened, look out team."))), Hero Icon String(Hero(Soldier: 76))));
 	}
 }
 
@@ -2445,9 +2532,14 @@ rule("When one of the EE is done")
 	actions
 	{
 		Create Effect(All Players(All Teams), Bad Aura, Color(Violet), Global.AnomalyLocation, 5, Visible To Position and Radius);
-		Small Message(All Players(All Teams), Custom String("{1}: \"{0}\"", Random Value In Array(Array(Custom String(
-			"What... is that? Be careful!"), Custom String("This looks strange, this may be dangerous."), Custom String(
-			"Look out team! That may be dangerous!"))), Hero Icon String(Hero(Soldier: 76))));
+		If(Global.ReviveSettings[5] == True);
+			Small Message(All Players(All Teams), Custom String("{1}: \"{0}\"", Random Value In Array(Array(Custom String(
+				"What... is that? Be careful!"), Custom String("This looks strange, this may be dangerous."), Custom String(
+				"Look out team! That may be dangerous!"))), Hero Icon String(Hero(Soldier: 76))));
+			Wait(2, Ignore Condition);
+			Small Message(All Players(All Teams), Custom String("{1}: \"{0}\"", Random Value In Array(Array(Custom String(
+				"Its the Anomaly! It may help us!"), Custom String("This must be the Anomaly! It could help us!"), Custom String(
+				"Reports show that this is the Anomaly, it may help us."))), Hero Icon String(Hero(Winston))));
 	}
 }
 
@@ -3243,6 +3335,9 @@ rule("In spawn room")
 	actions
 	{
 		Teleport(Event Player, Global.PlayerSpawn);
+		If(Hero Of(Event Player) == Hero(D.Va) && Event Player.restrictUlt && !Is In Alternate Form(Event Player));
+			Damage(Event Player, Null, 9999);
+		End;
 		disabled If(Event Player.PackAPunched == True);
 		disabled Set Max Ammo(Event Player, 0, Max Ammo(Event Player, 0) + Max Ammo(Event Player, 0));
 		disabled Set Max Ammo(Event Player, 1, Max Ammo(Event Player, 1) + Max Ammo(Event Player, 1));
@@ -3415,8 +3510,8 @@ rule("Director - facing")
 	actions
 	{
 		Start Facing(Event Player, Event Player.BotTarget == Null ? Facing Direction Of(Event Player) : Direction Towards(Eye Position(
-			Event Player), Global.Difficulty == 0 ? (Eye Position(Event Player.BotTarget) + Position Of(Event Player.BotTarget))
-			/ 2 : Eye Position(Event Player.BotTarget)), Global.Difficulty == 0 ? 100 : 999, To World, Direction and Turn Rate);
+			Event Player), Global.Difficulty == 0 ? Eye Position(Event Player.BotTarget) - Vector(0, 0.500, 0) : Eye Position(
+			Event Player.BotTarget)), Global.Difficulty == 0 ? 100 : 999, To World, Direction and Turn Rate);
 	}
 }
 
@@ -3438,6 +3533,7 @@ rule("Director - Shooting if range")
 		Is True For Any(All Players(Team 1), Distance Between(Event Player, Current Array Element) < 10) == True;
 		(Global.Difficulty == 0 ? Ray Cast Hit Player(Eye Position(Event Player), Eye Position(Event Player) + Facing Direction Of(
 			Event Player) * 10, All Players(Team 1), Event Player, False) : True) == True;
+		(Is Alive(Event Player.BotTarget) || !Event Player.BotTarget.backupIsDown) == True;
 	}
 
 	actions
@@ -3488,6 +3584,7 @@ rule("Teleport in Dummy Bot on Spawn")
 	{
 		Is Dummy Bot(Event Player) == True;
 		Is Alive(Event Player) == True;
+		Global.BossBot != Event Player;
 	}
 
 	actions
@@ -3503,8 +3600,9 @@ rule("Teleport in Dummy Bot on Spawn")
 				Teleport(Event Player, First Of(Sorted Array(Global.EnemySpawns, Distance Between(Event Player.BotTarget,
 					Current Array Element))));
 			End;
-			Call Subroutine(DummyName);
-			Set Invisible(Event Player, None);
+		End;
+		Call Subroutine(DummyName);
+		Set Invisible(Event Player, None);
 	}
 }
 
@@ -3615,6 +3713,7 @@ rule("Dummy Bot Name")
 			Start Forcing Dummy Bot Name(Event Player, Custom String("Ravager"));
 		Else If(Hero Of(Event Player) == Hero(Zenyatta));
 			Start Forcing Dummy Bot Name(Event Player, Custom String("Boomyatta"));
+		End;
 	}
 }
 
@@ -3665,7 +3764,7 @@ rule("Lobby Hud")
 		disabled Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
 			Null, Top, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("Check out all techs other codes! - techsgames.xyz"), Custom String(
-			"Version 1.17 - 11/5/2023"), Right, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			"Version 1.18 - 11/7/2023"), Right, -3, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Create HUD Text(Event Player, Null, Custom String("{0}\r\n{1}\r\n{2}", Custom String(" "), Custom String(" "), Custom String(" ")),
 			Null, Right, -4, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 		Set Objective Description(Event Player, Custom String("Welcome to Omnic Ops Survival created by techdude04", Input Binding String(
@@ -3926,8 +4025,6 @@ rule("Boss Phase Change")
 	actions
 	{
 		Global.bossAttackPhase = True;
-		Wait(10, Ignore Condition);
-		Global.bossAttackPhase = False;
 		If(Count Of(Filtered Array(All Players(Team 1), !Current Array Element.backupIsDown && Is Alive(Current Array Element))) == 1);
 			Create Homing Projectile(Pharah Rocket, Closest Player To(Global.EE1Location, Team 1), Global.EE1Location, Null, To World, Damage,
 				Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
@@ -3939,6 +4036,8 @@ rule("Boss Phase Change")
 				Global.BossBot, 100, 1, 10, Pharah Rocket Launcher Explosion Effect, Pharah Rocket Launcher Explosion Sound, 0, 10, 99, 0,
 				Global.BossBot, 1);
 		End;
+		Wait(10, Ignore Condition);
+		Global.bossAttackPhase = False;
 		Wait(10, Ignore Condition);
 		Loop If Condition Is True;
 	}
@@ -3974,21 +4073,7 @@ rule("Start Exfil")
 				Wait Until(Count Of(Filtered Array(All Players(Team 1), Current Array Element.exfilVote == True)) == Number Of Players(Team 1)
 					|| Global.exfilReadyTimer == 0, 99999);
 				If(Count Of(Filtered Array(All Players(Team 1), Current Array Element.exfilVote == True)) == Number Of Players(Team 1));
-					Global.exfilStarted = True;
-					Respawn(All Dead Players(Team 2));
-					Global.ZombiesLeft = Global.exfilRequirement;
-					Small Message(All Players(All Teams), Custom String("{0}: {1}", Hero Icon String(Hero(Ana)), Random Value In Array(
-						Global.RandomExfilLines)));
-					Big Message(All Players(All Teams), Custom String("Exfil Started!"));
-					Set Ultimate Charge(All Players(Team 1), 100);
-					If(Global.enemyTypeHandling == 1 || Global.enemyTypeHandling == 3);
-						Modify Global Variable(EnemyTypes, Append To Array, Hero(Ramattra));
-					End;
-					If(Global.enemyTypeHandling == 1 || Global.enemyTypeHandling == 4);
-						Modify Global Variable(EnemyTypes, Append To Array, Hero(Zenyatta));
-					End;
-					Wait Until(Global.exfilKillCounter == Global.exfilRequirement, 99999);
-					Big Message(All Players(All Teams), Custom String("Exfil Portal opened!"));
+					Call Subroutine(StartExfil);
 				Else If(Global.exfilReadyTimer == 0);
 					All Players(Team 1).exfilVote = False;
 				End;
@@ -4284,7 +4369,7 @@ rule("Director - Respawn if out of view")
 	{
 		Is Dummy Bot(Event Player) == True;
 		Global.BossBot != Event Player;
-		Is In View Angle(Event Player, Position Of(Event Player.BotTarget), 90) == False;
+		Is In View Angle(Event Player, Position Of(Event Player.BotTarget), 180) == False;
 		Players in View Angle(Event Player, Team 1, 90) == False;
 		Event Player.BotTarget != Null;
 	}
@@ -4639,154 +4724,36 @@ disabled rule("Map Template")
 
 	actions
 	{
-		Else If(Is True For Any(Array(Map(Workshop Chamber), Map(Workshop Expanse), Map(Workshop Expanse Night), Map(
-			Workshop Green Screen), Map(Workshop Island), Map(Workshop Island Night)), Current Map == Current Array Element));
+		Else If(Current Map == Map(Antarctic Peninsula));
 		disabled Start Forcing Spawn Room(Team 1, 0);
 		disabled Start Forcing Spawn Room(Team 2, 1);
-		Global.Barrier = Vector(0, Y Component Of(Global.Barrier) - 6, 0);
-		Global.PlayerSpawn = Vector(0, 0, 0);
-		Global.QuickReviveLocation = Vector(-17.500, 1.550, 9.500);
-		Global.JugLocation = Vector(-17.500, 1.550, 2);
-		Global.StaminLocation = Vector(-10, 1.550, 18);
-		Global.ElectricLocation = Vector(-2, 1.550, 17.500);
-		Global.PowerLocation = Vector(-17.500, 1.550, 17.500);
-		Global.MysteryBox = Vector(17.500, 1.550, 17.500);
-		Global.EnemySpawns = Array(Vector(0, 1.550, -16));
-		Global.PackAPunchLocation = Vector(18.500, 1.550, -18.500);
-		Global.EE1Location = Vector(18.500, 1.550, 0);
-		Global.EE2Location = Vector(18.500, 1.550, 8);
-		Global.EE3Location = Vector(18.500, 1.550, -8);
-		Global.AnomalyLocation = Vector(0, 1.550, 12);
-		Global.StartBossLocation = Vector(0, 1.550, 17.500);
-		Global.BombDefuseLocationArray = Array(Vector(-9.028, 1.508, -8.550));
-		Global.ActivateEELocation = Vector(-17.500, 1.550, -6.500);
-		Global.RewardLocation = Vector(6, 1.274, -17.500);
-		Global.ChallengeArea = Vector(0, 0, 0);
-		Global.ChallengesLocation = Vector(14, 1.274, -17.500);
-		Global.BarrierRadius = Is True For Any(Array(Map(Workshop Expanse Night), Map(Workshop Expanse)),
-			Current Array Element == Current Map) ? 50 : 0;
-		Global.PartsLoc = Array(Vector(-13.500, 1.274, -18), Vector(-10.500, 1.274, -18.500), Vector(-5.500, 1.275, -18));
-		Global.WorkbenchLoc = Vector(-17.500, 1.275, -18);
-		Global.HeroBuildable = Hero(D.Va);
-		Global.exfilLocation = Vector(0, 0, 0);
-		Global.exfilStartLocation = Vector(10.500, 1.550, 17.500);
-	}
-}
-
-disabled rule("Revive System - Is Dead")
-{
-	event
-	{
-		Player Died;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Team Of(Event Player) == Team 1;
-		Global.HasGameStarted == True;
-		Global.ShowGameStart == True;
-		Array Contains(Global.InGamePlayers, Event Player) == True;
-	}
-
-	actions
-	{
-		Wait(0.016, Ignore Condition);
-		Event Player.spectatingIndex = Index Of Array Value(Sorted Array(All Players(Team 1), Current Array Element), Event Player);
-		If(Event Player.backupIsDown == False);
-			Resurrect(Event Player);
-			If(Is On Objective(Event Player) || Event Was Environment || Event Player.OutOfBounds);
-				Teleport(Event Player, Event Player.backupLastLocation);
-			End;
-			Big Message(All Players(All Teams), Custom String("{0} {1} needs to be revived!", Hero Icon String(Hero Of(Event Player)),
-				Event Player));
-			disabled Start Camera(Event Player, Event Player + World Vector Of(Vector(0, 6, -1), Event Player, Rotation), Event Player, 25);
-			Start Camera(Event Player, Ray Cast Hit Position(All Players(Team 1)[Event Player.spectatingIndex], Eye Position(All Players(
-				Team 1)[Event Player.spectatingIndex]) + World Vector Of(Vector(1 * Min(-2.500 / 2.500, -0.750), 0, 0), All Players(Team 1)
-				[Event Player.spectatingIndex], Rotation) + Facing Direction Of(All Players(Team 1)[Event Player.spectatingIndex]) * -2.500,
-				All Players(All Teams), All Players(Team 1)[Event Player.spectatingIndex], False), Ray Cast Hit Position(Eye Position(
-				All Players(Team 1)[Event Player.spectatingIndex]), Eye Position(All Players(Team 1)[Event Player.spectatingIndex])
-				+ Facing Direction Of(All Players(Team 1)[Event Player.spectatingIndex]) * 200, All Players(All Teams), All Players(Team 1)
-				[Event Player.spectatingIndex], False), 60);
-			disabled Start Camera(Event Player, Event Player + World Vector Of(Vector(0, 6, -1), Event Player, Rotation), Event Player, 25);
-			Set Status(Event Player, Null, Knocked Down, 9999);
-			Set Status(Event Player, Null, Invincible, 9999);
-			Event Player.backupIsDown = True;
-			Communicate(Event Player, Need Help);
-			If(Event Player.SelfRevives == 0 && Number Of Players(Team 1) == 1);
-				Kill(Event Player, Null);
-			End;
-			If(Event Player.SelfRevives >= 1);
-				If(Global.PerkLossType == 0);
-					Event Player.LastBoughtPerk = First Of(Event Player.Perks);
-					If(Count Of(Event Player.Perks) >= 1);
-						If(Event Player.LastBoughtPerk == Custom String("Juggernog"));
-							Event Player.JuggLevel = 0;
-						Else If(Event Player.LastBoughtPerk == Custom String("StaminUp"));
-							Event Player.StaminLevel = 0;
-						Else If(Event Player.LastBoughtPerk == Custom String("ElectricCherry"));
-							Event Player.ElectricLevel = 0;
-						Else If(Event Player.LastBoughtPerk == Custom String("QuickRevive"));
-							Event Player.QuickLevel = 0;
-						End;
-						Modify Player Variable(Event Player, Perks, Remove From Array By Value, First Of(Event Player.Perks));
-					End;
-				Else If(Global.PerkLossType == 1);
-					Event Player.Perks = Empty Array;
-				End;
-				If(Global.WeaponLossType == 1);
-					Start Forcing Player To Be Hero(Event Player, Hero(D.Va));
-				End;
-				Event Player.SelfRevives -= 1;
-				"Begin Self Revive"
-				Event Player.backupRevivee = First Of(Sorted Array(Filtered Array(All Players(Team Of(Event Player)),
-					Current Array Element.backupIsDown), Distance Between(Event Player, Current Array Element)));
-				Event Player.backupRevivee.backupBeingRevived = True;
-				Event Player.backupRevivee.backupReviveTimer = 0;
-				While(Event Player.backupRevivee.backupReviveTimer <= Event Player.ReviveMaxTime);
-					Wait(0.020, Abort When False);
-					Event Player.backupRevivee.backupReviveTimer += 0.020;
-				End;
-				Event Player.backupRevivee.backupIsDown = False;
-				Clear Status(Event Player.backupRevivee, Knocked Down);
-				Event Player.backupRevivee.backupDownExpireTimer = Global.DeathMaxTime;
-				Clear Status(Event Player.backupRevivee, Invincible);
-				Play Effect(All Players(All Teams), Good Explosion, Color(White), Event Player.backupRevivee, 5);
-				Stop Camera(Event Player.backupRevivee);
-				Play Effect(All Players(All Teams), Brigitte Repair Pack Armor Effect, Color(White), Event Player.backupRevivee, 5);
-				Event Player.backupRevivee.backupBeingRevived = False;
-				Set Status(Event Player.backupRevivee, Null, Invincible, 5);
-				Play Effect(All Players(All Teams), Junkrat RIP Tire Explosion Effect, Color(White), Event Player.backupRevivee, 5);
-				Play Effect(All Players(All Teams), Junkrat RIP Tire Explosion Sound, Color(White), Event Player.backupRevivee, 100);
-				Set Status(Players Within Radius(Event Player.backupRevivee, 5, Team 2, Off), Null, Stunned, 5);
-				Big Message(All Players(All Teams), Custom String("{0} {1} was revived!", Hero Icon String(Hero Of(Event Player)), Event Player));
-				Event Player.backupRevivee = Null;
-			Else If(Event Player.SelfRevives <= 0);
-				Event Player.LastBoughtPerk = First Of(Event Player.Perks);
-				If(Count Of(Event Player.Perks) >= 1);
-					If(Event Player.LastBoughtPerk == Custom String("Juggernog"));
-						Event Player.JuggLevel = 0;
-					Else If(Event Player.LastBoughtPerk == Custom String("StaminUp"));
-						Event Player.StaminLevel = 0;
-					Else If(Event Player.LastBoughtPerk == Custom String("ElectricCherry"));
-						Event Player.ElectricLevel = 0;
-					Else If(Event Player.LastBoughtPerk == Custom String("QuickRevive"));
-						Event Player.QuickLevel = 0;
-					End;
-					Modify Player Variable(Event Player, Perks, Remove From Array By Value, First Of(Event Player.Perks));
-				End;
-			End;
-			disabled Start Camera(Event Player, Event Player + World Vector Of(Vector(0, 6, -1), Event Player, Rotation), Event Player, 25);
-			disabled Set Status(Event Player, Null, Knocked Down, 9999);
-			disabled Set Status(Event Player, Null, Invincible, 9999);
-			disabled Event Player.backupIsDown = True;
-		Else If(Event Player.backupIsDown == True);
-			Clear Status(Event Player, Knocked Down);
-			Clear Status(Event Player, Invincible);
-			Event Player.backupIsDown = False;
-			Event Player.backupDownExpireTimer = Global.DeathMaxTime;
-			Stop Camera(Event Player);
+		Global.Barrier = Vector(269.524, 41.172, 160.103);
+		Global.PlayerSpawn = Vector(270.107, 45.192, 178.072);
+		Global.QuickReviveLocation = Vector(261.877, 39.191, 179.255);
+		Global.JugLocation = Vector(266.811, 39.283, 177.329);
+		Global.StaminLocation = Vector(273.177, 39.281, 177.329);
+		Global.ElectricLocation = Vector(279.238, 39.192, 178.790);
+		Global.PowerLocation = Vector(285.670, 42.191, 149.209);
+		Global.MysteryBox = Vector(269.889, 41.278, 153.698);
+		Global.EnemySpawns = Array(Vector(291.464, 45.086, 154.748), Vector(278.697, 46.025, 179.005), Vector(248.860, 43.214, 166.872),
+			Vector(281.623, 42.194, 142.428));
+		Global.PackAPunchLocation = Vector(269.951, 45.192, 180.987);
+		Global.EE1Location = Vector(289.647, 42.975, 166.466);
+		Global.EE2Location = Vector(263.548, 45.194, 175.063);
+		Global.EE3Location = Vector(257.808, 42.189, 152.155);
+		Global.AnomalyLocation = Vector(269.764, 45.195, 154.782);
+		Global.StartBossLocation = Vector(269.967, 42.786, 143.020);
+		Global.BombDefuseLocationArray = Array(Vector(250.538, 45.477, 148.997), Vector(289.784, 45.484, 149.557));
+		Global.ActivateEELocation = Vector(269.867, 41.280, 163.699);
+		Global.RewardLocation = Vector(280.429, 41.473, 168.522);
+		Global.ChallengeArea = Vector(269.652, 41.479, 160.078);
+		Global.ChallengesLocation = Vector(258.709, 41.812, 168.460);
+		Global.BarrierRadius = 25;
+		Global.PartsLoc = Array(Vector(286.562, 43.122, 169.109), Vector(261.341, 47.381, 180.449), Vector(262.485, 43.559, 142.944));
+		Global.WorkbenchLoc = Vector(248.075, 45.221, 155.162);
+		Global.HeroBuildable = Hero(Mei);
+		Global.exfilLocation = Vector(248.763, 43.413, 169.200);
+		Global.exfilStartLocation = Vector(282.957, 42.414, 159.942);
 	}
 }
 
@@ -4809,7 +4776,6 @@ rule("Revive System - Revive Downed Player")
 		Team Of(Event Player) == Team 1;
 		Global.HasGameStarted == True;
 		Global.ShowGameStart == True;
-		disabled Array Contains(Global.InGamePlayers, Event Player) == True;
 		Is Alive(Event Player) == True;
 	}
 
@@ -4832,6 +4798,9 @@ rule("Revive System - Revive Downed Player")
 				Event Player.backupRevivee));
 			Event Player.backupRevivee.backupIsDown = False;
 			Clear Status(Event Player.backupRevivee, Knocked Down);
+			Filtered Array(All Players(Team 2), Current Array Element.BotTarget == Null).BotTarget = First Of(Sorted Array(Filtered Array(
+				All Living Players(Team 1), !Current Array Element.backupIsDown && !Current Array Element.ignoreMe), Distance Between(
+				Event Player, Current Array Element)));
 			Event Player.backupRevivee.backupDownExpireTimer = Global.DeathMaxTime;
 			Clear Status(Event Player.backupRevivee, Invincible);
 			Play Effect(All Players(All Teams), Good Explosion, Color(White), Event Player.backupRevivee, 5);
@@ -4912,7 +4881,7 @@ rule("Revive System - On Ground Location")
 	}
 }
 
-rule("Revive System - Everyone on a Team is Downed")
+disabled rule("Revive System - Everyone on a Team is Downed")
 {
 	event
 	{
@@ -5102,6 +5071,7 @@ rule("Revive System - Revive when Wave is Finished")
 		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 1));
 		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 2));
 		Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ultimate));
+		Wait Until(Is Alive(Event Player), 99999);
 	}
 }
 
@@ -5151,36 +5121,6 @@ rule("Director - Change Target if Target is down")
 			To World, Replace existing throttle, Direction and Magnitude);
 		Start Facing(Event Player, Direction Towards(Eye Position(Event Player), Eye Position(Event Player.BotTarget)), 100, To World,
 			Direction and Turn Rate);
-	}
-}
-
-disabled rule("Kill if Joined midgame")
-{
-	event
-	{
-		Player Joined Match;
-		Team 1;
-		All;
-	}
-
-	conditions
-	{
-		Array Contains(Global.InGamePlayers, Event Player) != True;
-		Global.HasGameStarted == True;
-		Is Dummy Bot(Event Player) == False;
-	}
-
-	actions
-	{
-		Wait Until(Is On Ground(Event Player), 99999);
-		disabled Kill(Event Player, Null);
-		Wait(0.250, Ignore Condition);
-		disabled Event Player.BotTarget = First Of(Filtered Array(Sorted Array(All Living Players(Team 1), Distance Between(Event Player,
-			Current Array Element)), !Current Array Element.backupIsDown));
-		Modify Global Variable(InGamePlayers, Append To Array, Event Player);
-		Event Player.ignoreMe = True;
-		Wait Until(Throttle Of(Event Player) > 0, 99999);
-		Event Player.ignoreMe = False;
 	}
 }
 
@@ -5355,14 +5295,25 @@ rule("Revive System - Is Dead")
 		Team Of(Event Player) == Team 1;
 		Global.HasGameStarted == True;
 		Global.ShowGameStart == True;
+		Global.GameOverMenu == False;
 	}
 
 	actions
 	{
 		disabled Wait(0.016, Ignore Condition);
+		Filtered Array(All Players(Team 2), Current Array Element.BotTarget == Event Player).BotTarget = First Of(Sorted Array(
+			Filtered Array(All Living Players(Team 1), !Current Array Element.backupIsDown && !Current Array Element.ignoreMe),
+			Distance Between(Event Player, Current Array Element)));
 		Event Player.spectatingIndex = Index Of Array Value(Sorted Array(All Players(Team 1),
 			Event Player == Current Array Element ? 100 : 0), Event Player);
-		If(Event Player.backupIsDown == False);
+		If(!Event Player.backupIsDown);
+			Event Player.backupIsDown = True;
+			If(Count Of(Filtered Array(All Players(Team 1), Current Array Element.backupIsDown || Current Array Element.willRespawnAtStart))
+				== Number Of Players(Team 1));
+				If(Count Of(Filtered Array(All Players(Team 1), Current Array Element.SelfRevives > 0)) == 0);
+					Call Subroutine(LastPlayerrDowned);
+				End;
+			End;
 			Resurrect(Event Player);
 			If(Event Was Environment || Event Player.OutOfBounds);
 				Teleport(Event Player, Event Player.OutOfBounds ? Event Player.backupLastLocation : Nearest Walkable Position(Position Of(
@@ -5395,7 +5346,6 @@ rule("Revive System - Is Dead")
 			disabled Start Camera(Event Player, Event Player + World Vector Of(Vector(0, 6, -1), Event Player, Rotation), Event Player, 25);
 			Set Status(Global.ReviveSettings[0] ? Null : Event Player, Null, Knocked Down, 9999);
 			Set Status(Event Player, Null, Invincible, 9999);
-			Event Player.backupIsDown = True;
 			Communicate(Event Player, Need Help);
 			If(Event Player.SelfRevives == 0 && Number Of Players(Team 1) == 1);
 				Kill(Event Player, Null);
@@ -5435,6 +5385,9 @@ rule("Revive System - Is Dead")
 				Clear Status(Event Player.backupRevivee, Knocked Down);
 				Event Player.backupRevivee.backupDownExpireTimer = Global.DeathMaxTime;
 				Clear Status(Event Player.backupRevivee, Invincible);
+				Filtered Array(All Players(Team 2), Current Array Element.BotTarget == Null).BotTarget = First Of(Sorted Array(Filtered Array(
+					All Living Players(Team 1), !Current Array Element.backupIsDown && !Current Array Element.ignoreMe), Distance Between(
+					Event Player, Current Array Element)));
 				Play Effect(All Players(All Teams), Good Explosion, Color(White), Event Player.backupRevivee, 5);
 				Stop Camera(Event Player.backupRevivee);
 				Play Effect(All Players(All Teams), Brigitte Repair Pack Armor Effect, Color(White), Event Player.backupRevivee, 5);
@@ -5471,7 +5424,7 @@ rule("Revive System - Is Dead")
 			disabled Set Status(Event Player, Null, Knocked Down, 9999);
 			disabled Set Status(Event Player, Null, Invincible, 9999);
 			disabled Event Player.backupIsDown = True;
-		Else If(Event Player.backupIsDown == True);
+		Else;
 			Clear Status(Event Player, Knocked Down);
 			Clear Status(Event Player, Invincible);
 			Event Player.backupIsDown = False;
@@ -5482,9 +5435,16 @@ rule("Revive System - Is Dead")
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Secondary Fire));
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Melee));
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 1));
+			Filtered Array(All Players(Team 2), Current Array Element.BotTarget == Event Player).BotTarget = First Of(Sorted Array(
+				Filtered Array(All Living Players(Team 1), !Current Array Element.backupIsDown && !Current Array Element.ignoreMe),
+				Distance Between(Event Player, Current Array Element)));
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ability 2));
 			Allow Button(Global.ReviveSettings[0] ? Event Player : Null, Button(Ultimate));
 			Event Player.willRespawnAtStart = True;
+			If(Count Of(Filtered Array(All Players(Team 1), !Current Array Element.willRespawnAtStart && !Current Array Element.backupIsDown))
+				== 0);
+				Call Subroutine(LastPlayerrDowned);
+			End;
 	}
 }
 
@@ -5514,26 +5474,6 @@ disabled rule("Rule 121")
 			Icon String(Heart))), Left, 11, Color(Red), Color(White), Is Dead(Event Player) || Event Player.backupIsDown ? Color(White) : (
 			Normalized Health(Event Player) > 0.750 ? Color(Green) : (Normalized Health(Event Player) <= 0.750 && Normalized Health(
 			Event Player) >= 0.450 ? Color(Yellow) : Color(Red))), Visible To String and Color, Default Visibility);
-	}
-}
-
-rule("Another check if player is downed or dead")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 2;
-		All;
-	}
-
-	conditions
-	{
-		(Event Player.BotTarget.backupIsDown || Is Dead(Event Player.BotTarget)) == True;
-	}
-
-	actions
-	{
-		Call Subroutine(ChangeTarget);
 	}
 }
 
@@ -5633,7 +5573,7 @@ rule("If Omnic gets Hacked")
 	{
 		Has Status(Event Player, Hacked) == True;
 		Global.BossBot != Event Player;
-		Distance Between(Event Player, Global.Barrier) < Global.BarrierRadius;
+		(Global.BarrierRadius == 0 ? True : Distance Between(Global.Barrier, Event Player) < Global.BarrierRadius) == True;
 	}
 
 	actions
@@ -5843,6 +5783,7 @@ rule("Boss Start Sequence")
 
 	actions
 	{
+		Teleport(Global.BossBot, Global.AnomalyLocation);
 		Disable Nameplates(Global.BossBot, All Players(All Teams));
 		Disable Hero HUD(All Players(All Teams));
 		Start Forcing Player Outlines(Global.BossBot, All Players(All Teams), False, Color(White), Default);
@@ -5894,10 +5835,9 @@ rule("Spawn Boss Subroutine")
 		If(Global.enemyTypeHandling == 1 || Global.enemyTypeHandling == 4);
 			Modify Global Variable(EnemyTypes, Append To Array, Hero(Zenyatta));
 		End;
-		Create Dummy Bot(Hero(Orisa), Team 2, -1, Ray Cast Hit Position(Global.AnomalyLocation + Vector(0, 8, 0), Global.AnomalyLocation,
-			Null, All Players(All Teams), False), Direction Towards(Global.AnomalyLocation, Vector(X Component Of(Global.PlayerSpawn), 0,
-			Z Component Of(Global.PlayerSpawn))));
-		Wait(0.250, Ignore Condition);
+		Create Dummy Bot(Hero(Orisa), Team 2, -1, Nearest Walkable Position(Global.AnomalyLocation), Direction Towards(
+			Global.AnomalyLocation, Vector(X Component Of(Global.PlayerSpawn), 0, Z Component Of(Global.PlayerSpawn))));
+		Wait(0.100, Ignore Condition);
 		Global.BossBot = Last Created Entity;
 		Start Scaling Player(Global.BossBot, 2, True);
 		Start Scaling Barriers(Global.BossBot, 2, True);
@@ -5913,13 +5853,72 @@ rule("Spawn Boss Subroutine")
 		Respawn(All Dead Players(Team 2));
 		Call Subroutine(BossStartSequence);
 		Big Message(All Players(All Teams), Custom String("Defeat the OR-15", Global.BossBot));
-		Set Damage Received(Global.BossBot, 10);
+		Set Damage Received(Global.BossBot, 20);
 		Small Message(All Players(All Teams), Custom String("{0}: \"{1}\"", Hero Icon String(Hero(Ana)), Random Value In Array(Array(
-			Custom String("Oh no! Its one of those OR15's. eliminate it!"), Custom String("****! A giant OR15!"), Custom String(
+			Custom String("Oh no! Its one of those OR15's. eliminate it!"), Custom String("Beware! A giant OR15!"), Custom String(
 			"Woah! A huge OR15.")))));
 		Set Knockback Received(Global.BossBot, 0);
-		Resurrect(Filtered Array(All Dead Players(Team 1), Array Contains(Global.InGamePlayers, Current Array Element)));
-		Enable Built-In Game Mode Respawning(Global.InGamePlayers);
+		Resurrect(All Dead Players(Team 1));
+		Enable Built-In Game Mode Respawning(All Players(Team 1));
 		Set Respawn Max Time(All Players(Team 1), 30);
+	}
+}
+
+rule("Last Player Downed - Subroutine")
+{
+	event
+	{
+		Subroutine;
+		LastPlayerrDowned;
+	}
+
+	actions
+	{
+		Start Camera(All Players(All Teams), Ray Cast Hit Position(Eye Position(Event Player), Eye Position(Event Player)
+			+ Facing Direction Of(Event Player) * 5, Null, All Players(All Teams), True) + Vector(0, 3, 0), Eye Position(Event Player), 0);
+		Set Slow Motion(25);
+		Wait(2, Ignore Condition);
+		Set Slow Motion(100);
+		Respawn(All Players(Team 1));
+		Global.GameOverMenu = True;
+		All Players(Team 1).backupIsDown = False;
+		Clear Status(All Players(Team 1), Knocked Down);
+		All Players(Team 1).backupDownExpireTimer = Global.DeathMaxTime;
+		Clear Status(All Players(Team 1), Invincible);
+		Play Effect(All Players(All Teams), Good Explosion, Color(White), Event Player, 5);
+		Play Effect(All Players(All Teams), Brigitte Repair Pack Armor Effect, Color(White), Event Player, 5);
+		All Players(Team 1).backupBeingRevived = False;
+		Set Status(All Players(Team 1), Null, Invincible, 5);
+		All Players(Team 1).backupRevivee = Null;
+		Stop Holding Button(Global.ReviveSettings[0] ? All Players(Team 1) : Null, Button(Crouch));
+		Wait Until(False, 99999);
+	}
+}
+
+rule("Exfil Subroutine")
+{
+	event
+	{
+		Subroutine;
+		StartExfil;
+	}
+
+	actions
+	{
+		Global.exfilStarted = True;
+		Respawn(All Dead Players(Team 1));
+		Global.ZombiesLeft = Global.exfilRequirement;
+		Small Message(All Players(All Teams), Custom String("{0}: {1}", Hero Icon String(Hero(Ana)), Random Value In Array(
+			Global.RandomExfilLines)));
+		Big Message(All Players(All Teams), Custom String("Exfil Started!"));
+		Set Ultimate Charge(All Players(Team 1), 100);
+		If(Global.enemyTypeHandling == 1 || Global.enemyTypeHandling == 3);
+			Modify Global Variable(EnemyTypes, Append To Array, Hero(Ramattra));
+		End;
+		If(Global.enemyTypeHandling == 1 || Global.enemyTypeHandling == 4);
+			Modify Global Variable(EnemyTypes, Append To Array, Hero(Zenyatta));
+		End;
+		Wait Until(Global.exfilKillCounter == Global.exfilRequirement, 99999);
+		Big Message(All Players(All Teams), Custom String("Exfil Portal opened!"));
 	}
 }
